@@ -14,13 +14,13 @@ const getApiKey = (): string | null => {
 };
 
 const getAI = (): GoogleGenerativeAI => {
-  if (!ai) {
-    const key = getApiKey();
-    if (!key) {
-      throw new Error("Gemini API key is not configured. Set GEMINI_API_KEY at build time or save it in localStorage under 'GEMINI_API_KEY'.");
-    }
-    ai = new GoogleGenerativeAI(key);
+  const key = getApiKey();
+  if (!key) {
+    throw new Error("Gemini API key is not configured. Set GEMINI_API_KEY at build time or save it in localStorage under 'GEMINI_API_KEY'.");
   }
+  
+  // Always create a new instance to ensure we use the latest API key from localStorage
+  ai = new GoogleGenerativeAI(key);
   return ai;
 };
 
