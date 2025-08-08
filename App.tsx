@@ -7,6 +7,9 @@ import Footer from './components/Footer.tsx';
 import PromptCard from './components/PromptCard.tsx';
 import Loader from './components/Loader.tsx';
 import ImageIcon from './components/icons/ImageIcon.tsx';
+import { Input } from './src/components/ui/input';
+import { Label } from './src/components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './src/components/ui/card';
 
 const lightingOptions = [
     'Golden Hour', 'Neon', 'Moody', 'Bright Daylight', 'Dramatic Shadows', 
@@ -72,6 +75,17 @@ const App: React.FC = () => {
   
   const [isNsfwMode, setIsNsfwMode] = useState<boolean>(false);
   const [wordCount, setWordCount] = useState<number>(0);
+  const [apiKey, setApiKey] = useState<string>('');
+  const [isApiKeySet, setIsApiKeySet] = useState<boolean>(false);
+
+  useEffect(() => {
+    // Check for existing API key in localStorage
+    const existingKey = localStorage.getItem('GEMINI_API_KEY');
+    if (existingKey) {
+      setApiKey(existingKey);
+      setIsApiKeySet(true);
+    }
+  }, []);
 
   useEffect(() => {
     const countWords = (str: string): number => {
@@ -90,6 +104,19 @@ const App: React.FC = () => {
     setWordCount(totalWords);
 
   }, [scene, style, protagonistAction, cameraAngle, cameraMovement, lighting]);
+
+  const handleApiKeySubmit = () => {
+    if (apiKey.trim()) {
+      localStorage.setItem('GEMINI_API_KEY', apiKey.trim());
+      setIsApiKeySet(true);
+    }
+  };
+
+  const handleApiKeyClear = () => {
+    localStorage.removeItem('GEMINI_API_KEY');
+    setApiKey('');
+    setIsApiKeySet(false);
+  };
 
   const handleToggleNsfwMode = () => {
     setIsNsfwMode(prev => {
@@ -151,7 +178,7 @@ const App: React.FC = () => {
 
   const handleGeneratePrompts = useCallback(async (e: FormEvent) => {
     e.preventDefault();
-    if (!scene.trim() || loading || lighting.length === 0) return;
+    if (!scene.trim() || loading || lighting.length === 0 || !isApiKeySet) return;
 
     setLoading(true);
     setError(null);
@@ -231,6 +258,60 @@ const App: React.FC = () => {
       <Header />
       <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="max-w-4xl mx-auto">
+          {!isApiKeySet && (
+            <Card className="mb-6 border-blue-500/50 bg-blue-900/20">
+              <CardHeader>
+                <CardTitle className="text-blue-300">🔑 API Key Required</CardTitle>
+                <CardDescription className="text-zinc-400">
+                  Enter your Google Gemini API key to start generating video prompts. Your key is stored locally in your browser.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label htmlFor="apiKey" className="text-zinc-300">Google Gemini API Key</Label>
+                  <div className="flex gap-2 mt-2">
+                    <Input
+                      id="apiKey"
+                      type="password"
+                      value={apiKey}
+                      onChange={(e) => setApiKey(e.target.value)}
+                      placeholder="AIza..."
+                      className="bg-zinc-800 border-zinc-700 text-white"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleApiKeySubmit}
+                      disabled={!apiKey.trim()}
+                      className="px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-500 disabled:bg-zinc-700 disabled:text-zinc-400 disabled:cursor-not-allowed transition-colors"
+                    >
+                      Save
+                    </button>
+                  </div>
+                </div>
+                <p className="text-xs text-zinc-500">
+                  Need an API key? Get one from <a href="https://makersuite.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 underline">Google AI Studio</a>
+                </p>
+              </CardContent>
+            </Card>
+          )}
+
+          {isApiKeySet && (
+            <div className="mb-6 p-4 border border-green-500/50 bg-green-900/20 rounded-lg flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-green-400">✅</span>
+                <span className="text-green-300 font-medium">API Key Set</span>
+                <span className="text-zinc-400 text-sm">({apiKey.slice(0, 8)}...)</span>
+              </div>
+              <button
+                type="button"
+                onClick={handleApiKeyClear}
+                className="px-3 py-1 bg-red-600/20 text-red-300 text-sm rounded hover:bg-red-600/30 transition-colors"
+              >
+                Clear
+              </button>
+            </div>
+          )}
+
           <form onSubmit={handleGeneratePrompts} className="bg-zinc-800/50 p-6 rounded-xl border border-zinc-700">
             
             <div className="mb-6 p-4 border border-red-500/50 bg-red-900/20 rounded-lg">
@@ -371,10 +452,10 @@ const App: React.FC = () => {
               <div className="md:col-span-2 mt-4">
                 <button
                   type="submit"
-                  disabled={loading || !scene.trim() || lighting.length === 0}
+                  disabled={loading || !scene.trim() || lighting.length === 0 || !isApiKeySet}
                   className="w-full flex items-center justify-center px-6 py-3 bg-red-600 text-white rounded-lg font-bold hover:bg-red-500 disabled:bg-zinc-700 disabled:text-zinc-400 disabled:cursor-not-allowed transition-colors duration-200 text-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-zinc-800 focus:ring-red-500"
                 >
-                  Generate Prompts
+                  {!isApiKeySet ? 'Enter API Key to Generate' : 'Generate Prompts'}
                 </button>
               </div>
             </div>
