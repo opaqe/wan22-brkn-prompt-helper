@@ -12,10 +12,44 @@ import { Label } from './src/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './src/components/ui/card';
 
 const lightingOptions = [
-    'Golden Hour', 'Neon', 'Moody', 'Bright Daylight', 'Dramatic Shadows', 
-    'Rim Light', 'Soft Key Light', 'Hard Light', 'Backlight', 
-    'Three-Point Lighting', 'High-Key Lighting', 'Low-Key Lighting', 
-    'Chiaroscuro', 'Volumetric Lighting', 'Top Light', 'Underlighting'
+  // 🌅 Natural & Environmental Light
+  'Golden Hour',
+  'Blue Hour (cool twilight tones)',
+  'Bright Daylight',
+  'Overcast / Diffused Natural Light',
+  'Cloudy Soft Light',
+  'Dappled Sunlight (through leaves or patterns)',
+  'Moonlight',
+  'Candlelight',
+  'Firelight / Campfire glow',
+  'Neon',
+  
+  // 🎭 Cinematic & Dramatic Styles
+  'Moody',
+  'Dramatic Shadows',
+  'Chiaroscuro',
+  'Low-Key Lighting',
+  'High-Key Lighting',
+  'Volumetric Lighting (light beams, atmospheric haze)',
+  'Rim Light',
+  'Backlight',
+  'Silhouette Lighting',
+  'Edge Lighting',
+  'Practical Lighting (visible lamps, signs in frame)',
+  
+  // 💡 Studio & Controlled Lighting
+  'Soft Key Light',
+  'Hard Light',
+  'Top Light',
+  'Underlighting',
+  'Butterfly Lighting (Paramount style)',
+  'Rembrandt Lighting (triangle cheek light)',
+  'Split Lighting (half face lit)',
+  'Clamshell Lighting (beauty portrait setup)',
+  'Three-Point Lighting',
+  'Ring Light Glow',
+  'Fill Light Bounce',
+  'Spotlight Isolation',
 ];
 
 const styleOptions = [
