@@ -5,22 +5,32 @@ let ai: GoogleGenerativeAI | null = null;
 
 const getApiKey = (): string | null => {
   try {
+    console.log('Checking for API key...');
     const fromEnv = (process.env.API_KEY as string) || (process.env.GEMINI_API_KEY as string);
     const fromStorage = typeof window !== 'undefined' ? window.localStorage.getItem('GEMINI_API_KEY') : null;
-    return fromEnv || fromStorage || null;
-  } catch {
+    console.log('Environment key available:', !!fromEnv);
+    console.log('LocalStorage key available:', !!fromStorage);
+    const finalKey = fromEnv || fromStorage || null;
+    console.log('Final key available:', !!finalKey);
+    return finalKey;
+  } catch (error) {
+    console.error('Error getting API key:', error);
     return (process.env.API_KEY as string) || (process.env.GEMINI_API_KEY as string) || null;
   }
 };
 
 const getAI = (): GoogleGenerativeAI => {
+  console.log('Initializing Google Generative AI...');
   const key = getApiKey();
   if (!key) {
+    console.error('No API key found');
     throw new Error("Gemini API key is not configured. Set GEMINI_API_KEY at build time or save it in localStorage under 'GEMINI_API_KEY'.");
   }
   
+  console.log('Creating GoogleGenerativeAI instance...');
   // Always create a new instance to ensure we use the latest API key from localStorage
   ai = new GoogleGenerativeAI(key);
+  console.log('GoogleGenerativeAI instance created successfully');
   return ai;
 };
 
