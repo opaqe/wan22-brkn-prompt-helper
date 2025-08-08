@@ -341,6 +341,7 @@ const cameraDeviceGroups = [
 const App: React.FC = () => {
   const [scene, setScene] = useState<string>('');
   const [style, setStyle] = useState<string>('');
+  const [nsfwStyle, setNsfwStyle] = useState<string>('');
   const [protagonistAction, setProtagonistAction] = useState<string>('');
   const [cameraAngle, setCameraAngle] = useState<string>('');
   const [cameraMovement, setCameraMovement] = useState<string>('');
@@ -379,16 +380,17 @@ const App: React.FC = () => {
 
     const sceneWords = countWords(scene);
     const styleWords = countWords(style);
+    const nsfwStyleWords = countWords(nsfwStyle);
     const actionWords = countWords(protagonistAction);
     const angleWords = countWords(cameraAngle);
     const movementWords = countWords(cameraMovement);
     const deviceWords = countWords(cameraDevice);
     const lightingWords = countWords(lighting.join(' '));
 
-    const totalWords = sceneWords + styleWords + actionWords + angleWords + movementWords + deviceWords + lightingWords;
+    const totalWords = sceneWords + styleWords + nsfwStyleWords + actionWords + angleWords + movementWords + deviceWords + lightingWords;
     setWordCount(totalWords);
 
-  }, [scene, style, protagonistAction, cameraAngle, cameraMovement, cameraDevice, lighting]);
+  }, [scene, style, nsfwStyle, protagonistAction, cameraAngle, cameraMovement, cameraDevice, lighting]);
 
   const handleApiKeySubmit = () => {
     if (apiKey.trim()) {
@@ -408,6 +410,7 @@ const App: React.FC = () => {
         const newMode = !prev;
         // Reset fields to defaults for the new mode to avoid invalid combinations
         setStyle('');
+        setNsfwStyle('');
         setProtagonistAction('');
         // Clear previous results and errors
         setPrompts([]);
@@ -472,7 +475,7 @@ const App: React.FC = () => {
     try {
       const generatedPrompts = await generatePrompts({ 
         scene, 
-        style, 
+        style: [style, nsfwStyle].filter(Boolean).join(', '), 
         protagonistAction, 
         cameraAngle, 
         cameraMovement, 
@@ -486,7 +489,7 @@ const App: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [scene, style, protagonistAction, cameraAngle, cameraMovement, cameraDevice, lighting, loading, isNsfwMode]);
+  }, [scene, style, nsfwStyle, protagonistAction, cameraAngle, cameraMovement, cameraDevice, lighting, loading, isNsfwMode]);
 
   const renderContent = () => {
     if (loading) {
@@ -704,20 +707,28 @@ const currentProtagonistActionOptions = isNsfwMode ? nsfwProtagonistActionOption
               </div>
               <div>
                 <label htmlFor="style" className={formLabelClass}>Style</label>
-<select id="style" value={style} onChange={(e) => setStyle(e.target.value)} className={formSelectClass} disabled={loading}>
+                <select id="style" value={style} onChange={(e) => setStyle(e.target.value)} className={formSelectClass} disabled={loading}>
                   <option value="">None</option>
                   {styleOptions.map(option => (
                     <option key={option} value={option}>{option}</option>
                   ))}
-                  {isNsfwMode && (
-                    <optgroup label="🔴 NSFW Style">
-                      {nsfwStyleGroups.flatMap(group => group.options).map(option => (
-                        <option key={option} value={option}>{option}</option>
-                      ))}
-                    </optgroup>
-                  )}
                 </select>
               </div>
+              {isNsfwMode && (
+                <div>
+                  <label htmlFor="nsfwStyle" className={`${formLabelClass} text-red-300`}>NSFW Style</label>
+                  <select id="nsfwStyle" value={nsfwStyle} onChange={(e) => setNsfwStyle(e.target.value)} className={formSelectClass} disabled={loading}>
+                    <option value="">None</option>
+                    {nsfwStyleGroups.map(group => (
+                      <optgroup key={group.label} label={group.label}>
+                        {group.options.map(option => (
+                          <option key={option} value={option}>{option}</option>
+                        ))}
+                      </optgroup>
+                    ))}
+                  </select>
+                </div>
+              )}
                <div>
                 <label htmlFor="protagonistAction" className={formLabelClass}>Protagonist Action</label>
                 <select id="protagonistAction" value={protagonistAction} onChange={(e) => setProtagonistAction(e.target.value)} className={formSelectClass} disabled={loading}>
