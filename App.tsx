@@ -189,11 +189,20 @@ const protagonistActionOptions = [
 ];
 
 // NSFW 18+ Options
-const nsfwStyleOptions = [
-    'Erotic', 'Sensual', 'Intimate Portrait', 'Dark Fantasy', 'Provocative', 
-    'Boudoir', 'Taboo', 'Gritty Realism', 'Film Noir', 'Neo-Noir', 'Arthouse',
-    'Baroque', 'Giallo', 'Soft-focus Dream'
-];
+const nsfwStyleGroups = [
+  {
+    label: '💫 Soft & Suggestive',
+    options: ['Sensual', 'Intimate Portrait'],
+  },
+  {
+    label: '🔥 Erotic & Provocative',
+    options: ['Erotic', 'Provocative'],
+  },
+  {
+    label: '🎭 Stylized Erotic Genres',
+    options: ['Dark Fantasy'],
+  },
+] as const;
 const nsfwProtagonistActionOptions = [
     'Giving a blowjob', 'Slowly undressing', 'Lounging on a bed leg spread', 'Sharing an intense, intimate gaze',
     'Whispering a secret', 'Caressing their own skin','Caressing her pussy', 'A passionate kiss', 'lying on her back legs spread', 'On all fours'
@@ -497,8 +506,7 @@ const App: React.FC = () => {
   const formTextareaClass = "w-full p-2.5 bg-zinc-800 border border-zinc-700 rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none transition duration-200 min-h-[100px] text-base";
   const buttonClass = "flex items-center justify-center px-4 py-2 bg-zinc-700 text-white rounded-lg font-semibold hover:bg-zinc-600 disabled:bg-zinc-800 disabled:text-zinc-500 disabled:cursor-not-allowed transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-zinc-900 focus:ring-red-500";
   
-  const currentStyleOptions = isNsfwMode ? nsfwStyleOptions : styleOptions;
-  const currentProtagonistActionOptions = isNsfwMode ? nsfwProtagonistActionOptions : protagonistActionOptions;
+const currentProtagonistActionOptions = isNsfwMode ? nsfwProtagonistActionOptions : protagonistActionOptions;
 
   return (
     <div className="min-h-screen flex flex-col bg-zinc-900 text-zinc-100 font-sans">
@@ -666,9 +674,19 @@ const App: React.FC = () => {
               </div>
               <div>
                 <label htmlFor="style" className={formLabelClass}>Style</label>
-                <select id="style" value={style} onChange={(e) => setStyle(e.target.value)} className={formSelectClass} disabled={loading}>
+<select id="style" value={style} onChange={(e) => setStyle(e.target.value)} className={formSelectClass} disabled={loading}>
                   <option value="">None</option>
-                  {currentStyleOptions.map(option => <option key={option} value={option}>{option}</option>)}
+                  {isNsfwMode ? (
+                    nsfwStyleGroups.map(group => (
+                      <optgroup key={group.label} label={group.label}>
+                        {group.options.map(option => (
+                          <option key={option} value={option}>{option}</option>
+                        ))}
+                      </optgroup>
+                    ))
+                  ) : (
+                    styleOptions.map(option => <option key={option} value={option}>{option}</option>)
+                  )}
                 </select>
               </div>
                <div>
