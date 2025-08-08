@@ -6,19 +6,16 @@ let ai: GoogleGenerativeAI | null = null;
 const getApiKey = (): string | null => {
   try {
     console.log('Checking for API key...');
-    // Hardcoded API key for convenience
-    const hardcodedKey = 'AIzaSyBMsmjoFSE3yjReGdUvzoaeqeP_MyaQmJs';
     const fromEnv = (process.env.API_KEY as string) || (process.env.GEMINI_API_KEY as string);
     const fromStorage = typeof window !== 'undefined' ? window.localStorage.getItem('GEMINI_API_KEY') : null;
     console.log('Environment key available:', !!fromEnv);
     console.log('LocalStorage key available:', !!fromStorage);
-    console.log('Hardcoded key available:', !!hardcodedKey);
-    const finalKey = fromEnv || fromStorage || hardcodedKey;
+    const finalKey = fromEnv || fromStorage;
     console.log('Final key available:', !!finalKey);
     return finalKey;
   } catch (error) {
     console.error('Error getting API key:', error);
-    return 'AIzaSyBMsmjoFSE3yjReGdUvzoaeqeP_MyaQmJs';
+    return null;
   }
 };
 
