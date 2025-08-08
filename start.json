@@ -9,7 +9,7 @@
     {
       "method": "shell.enter",
       "params": {
-        "message": "npm run dev",
+        "message": "npm run dev -- --port 8080",
         "on": [
           {
             "event": "/(http:\\S.+)/",
