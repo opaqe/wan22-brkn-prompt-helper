@@ -82,11 +82,21 @@ src/
 ### LLM Providers & API Keys
 
 This app supports multiple providers via the in-app Settings dialog:
-- Google Gemini — Get API key: https://aistudio.google.com/app/apikey
-- OpenAI — Get API key: https://platform.openai.com/api-keys
-- Anthropic — Get API key: https://console.anthropic.com/settings/keys
-- Stability AI — Get API key: https://platform.stability.ai/account/keys
-- Perplexity — Get API key: https://www.perplexity.ai/settings/api (Docs: https://docs.perplexity.ai/docs/get-started)
+- Google Gemini
+  - API docs & key creation: https://ai.google.dev/gemini-api/docs/get-started
+  - Google Cloud console (key management): https://console.cloud.google.com/apis/credentials
+- OpenAI
+  - API key creation: https://platform.openai.com/api-keys
+  - Docs: https://platform.openai.com/docs
+- Anthropic (Claude)
+  - Sign up & get API key: https://console.anthropic.com/
+  - Docs: https://docs.anthropic.com/
+- Stability AI (Stable Diffusion, etc.)
+  - Account & key creation: https://platform.stability.ai/account/keys
+  - Docs: https://platform.stability.ai/docs
+- Perplexity AI (API is limited, currently via Pro)
+  - Sign up for Perplexity Labs: https://www.perplexity.ai/pro
+  - API docs (currently closed beta): https://docs.perplexity.ai/
 
 ### How keys are stored
 
