@@ -1,7 +1,7 @@
-import { GoogleGenAI, Type } from "@google/genai";
+import { GoogleGenerativeAI, SchemaType } from "@google/generative-ai";
 import { VideoPrompt } from '../types.ts';
 
-let ai: GoogleGenAI | null = null;
+let ai: GoogleGenerativeAI | null = null;
 
 const getApiKey = (): string | null => {
   try {
@@ -13,28 +13,28 @@ const getApiKey = (): string | null => {
   }
 };
 
-const getAI = (): GoogleGenAI => {
+const getAI = (): GoogleGenerativeAI => {
   if (!ai) {
     const key = getApiKey();
     if (!key) {
       throw new Error("Gemini API key is not configured. Set GEMINI_API_KEY at build time or save it in localStorage under 'GEMINI_API_KEY'.");
     }
-    ai = new GoogleGenAI({ apiKey: key });
+    ai = new GoogleGenerativeAI(key);
   }
   return ai;
 };
 
 const promptsSchema = {
-  type: Type.ARRAY,
+  type: SchemaType.ARRAY,
   items: {
-    type: Type.OBJECT,
+    type: SchemaType.OBJECT,
     properties: {
       title: {
-        type: Type.STRING,
+        type: SchemaType.STRING,
         description: 'A short, descriptive title for this prompt variation (e.g., "Cinematic Drone Shot").'
       },
       prompt: {
-        type: Type.STRING,
+        type: SchemaType.STRING,
         description: 'The full, detailed video prompt text, combining all elements into a coherent paragraph.'
       }
     },
@@ -43,36 +43,36 @@ const promptsSchema = {
 };
 
 const promptToJsonSchema = {
-    type: Type.OBJECT,
+    type: SchemaType.OBJECT,
     properties: {
         scene_description: {
-            type: Type.STRING,
+            type: SchemaType.STRING,
             description: 'A detailed summary of the main scene, setting, and environment.'
         },
         visual_style: {
-            type: Type.STRING,
+            type: SchemaType.STRING,
             description: 'The overall visual style or aesthetic (e.g., Cinematic, Anime, Vintage Film).'
         },
         protagonist_action: {
-            type: Type.STRING,
+            type: SchemaType.STRING,
             description: 'The primary action the main character is performing.'
         },
         camera_angle: {
-            type: Type.STRING,
+            type: SchemaType.STRING,
             description: 'The camera angle used for the shot (e.g., Wide Shot, Low-Angle Shot).'
         },
         camera_movement: {
-            type: Type.STRING,
+            type: SchemaType.STRING,
             description: 'The movement of the camera during the shot (e.g., Static, Pan Left, Dolly In).'
         },
         lighting_details: {
-            type: Type.STRING,
+            type: SchemaType.STRING,
             description: 'A description of the lighting setup and mood.'
         },
         additional_keywords: {
-            type: Type.ARRAY,
+            type: SchemaType.ARRAY,
             items: {
-                type: Type.STRING
+                type: SchemaType.STRING
             },
             description: 'Any other relevant keywords or tags from the prompt.'
         }
@@ -113,15 +113,13 @@ export const generateCaptionFromImage = async (params: CaptionGenerationParams):
             text: prompt,
         };
 
-        const response = await getAI().models.generateContent({
-            model: 'gemini-2.5-flash',
-            contents: { parts: [imagePart, textPart] },
-            config: {
-                temperature: 0.2, // Lower temperature for more factual description
-            }
-        });
+        const model = getAI().getGenerativeModel({ model: 'gemini-1.5-flash' });
+        const response = await model.generateContent([
+            { inlineData: { data: imageData, mimeType: mimeType } },
+            prompt
+        ]);
 
-        return response.text;
+        return response.response.text();
 
     } catch (error) {
         console.error("Error generating caption from image:", error);
@@ -139,17 +137,17 @@ export const transformPromptToJson = async (promptText: string): Promise<object>
 
 Video Prompt: "${promptText}"`;
         
-        const response = await getAI().models.generateContent({
-            model: "gemini-2.5-flash",
-            contents: prompt,
-            config: {
+        const model = getAI().getGenerativeModel({ 
+            model: "gemini-1.5-flash",
+            generationConfig: {
                 responseMimeType: "application/json",
                 responseSchema: promptToJsonSchema,
                 temperature: 0.1,
-            },
+            }
         });
+        const response = await model.generateContent(prompt);
 
-        const jsonText = response.text.trim();
+        const jsonText = response.response.text().trim();
         return JSON.parse(jsonText);
 
     } catch (error) {
@@ -206,17 +204,17 @@ Now, using the following criteria, generate 3 new variations. For each variation
 - **Camera Movement:** "${cameraMovement}"
 - **Lighting:** "${lighting}"`;
 
-    const response = await getAI().models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: prompt,
-      config: {
+    const model = getAI().getGenerativeModel({ 
+      model: "gemini-1.5-flash",
+      generationConfig: {
         responseMimeType: "application/json",
         responseSchema: promptsSchema,
         temperature: isNsfw ? 0.9 : 0.8,
-      },
+      }
     });
+    const response = await model.generateContent(prompt);
 
-    const jsonText = response.text.trim();
+    const jsonText = response.response.text().trim();
     const generatedPrompts = JSON.parse(jsonText);
     
     if (!Array.isArray(generatedPrompts)) {
