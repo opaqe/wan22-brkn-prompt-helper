@@ -1,6 +1,6 @@
 
 import React, { useState, useCallback, FormEvent, useRef, useEffect } from 'react';
-import { generatePrompts, generateCaptionFromImage } from './services/geminiService.ts';
+import { generatePrompts, generateCaptionFromImage, getActiveProvider as getActiveLLMProvider, setActiveProvider as setActiveLLMProvider, getApiKey as getStoredApiKey, setApiKey as storeApiKey, clearApiKey as removeApiKey, PROVIDERS, type LLMProvider } from './services/llm/router.ts';
 import { VideoPrompt } from './types.ts';
 import Header from './components/Header.tsx';
 import Footer from './components/Footer.tsx';
@@ -77,14 +77,15 @@ const App: React.FC = () => {
   const [wordCount, setWordCount] = useState<number>(0);
   const [apiKey, setApiKey] = useState<string>('');
   const [isApiKeySet, setIsApiKeySet] = useState<boolean>(false);
+  const [activeProvider, setActiveProviderState] = useState<LLMProvider>(getActiveLLMProvider());
 
   useEffect(() => {
-    // Check for existing API key in localStorage
-    const existingKey = localStorage.getItem('GEMINI_API_KEY');
-    if (existingKey) {
-      setApiKey(existingKey);
-      setIsApiKeySet(true);
-    }
+    // Initialize active provider and its stored API key
+    const provider = getActiveLLMProvider();
+    setActiveProviderState(provider);
+    const existingKey = getStoredApiKey(provider) || '';
+    setApiKey(existingKey);
+    setIsApiKeySet(!!existingKey);
   }, []);
 
   useEffect(() => {
@@ -107,13 +108,13 @@ const App: React.FC = () => {
 
   const handleApiKeySubmit = () => {
     if (apiKey.trim()) {
-      localStorage.setItem('GEMINI_API_KEY', apiKey.trim());
+      storeApiKey(apiKey, activeProvider);
       setIsApiKeySet(true);
     }
   };
 
   const handleApiKeyClear = () => {
-    localStorage.removeItem('GEMINI_API_KEY');
+    removeApiKey(activeProvider);
     setApiKey('');
     setIsApiKeySet(false);
   };
@@ -263,19 +264,39 @@ const App: React.FC = () => {
               <CardHeader>
                 <CardTitle className="text-blue-300">🔑 API Key Required</CardTitle>
                 <CardDescription className="text-zinc-400">
-                  Enter your Google Gemini API key to start generating video prompts. Your key is stored locally in your browser.
+                  Select your provider and enter its API key. Keys are stored locally in your browser. Note: only Google Gemini is used right now; others will be supported soon.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
+                <div className="grid gap-3">
+                  <Label htmlFor="provider" className="text-zinc-300">Provider</Label>
+                  <select
+                    id="provider"
+                    value={activeProvider}
+                    onChange={(e) => {
+                      const p = e.target.value as LLMProvider;
+                      setActiveProviderState(p);
+                      setActiveLLMProvider(p);
+                      const k = getStoredApiKey(p) || '';
+                      setApiKey(k);
+                      setIsApiKeySet(!!k);
+                    }}
+                    className="w-full p-2.5 bg-zinc-800 border border-zinc-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition duration-200"
+                  >
+                    {Object.entries(PROVIDERS).map(([id, meta]) => (
+                      <option key={id} value={id}>{meta.label}</option>
+                    ))}
+                  </select>
+                </div>
                 <div>
-                  <Label htmlFor="apiKey" className="text-zinc-300">Google Gemini API Key</Label>
+                  <Label htmlFor="apiKey" className="text-zinc-300">{PROVIDERS[activeProvider].label} API Key</Label>
                   <div className="flex gap-2 mt-2">
                     <Input
                       id="apiKey"
                       type="password"
                       value={apiKey}
                       onChange={(e) => setApiKey(e.target.value)}
-                      placeholder="AIza..."
+                      placeholder={activeProvider === 'gemini' ? 'AIza...' : activeProvider === 'openai' ? 'sk-...' : activeProvider === 'anthropic' ? 'sk-ant-...' : activeProvider === 'stability' ? 'sk-...' : 'pplx-...'}
                       className="bg-zinc-800 border-zinc-700 text-white"
                     />
                     <button
@@ -288,9 +309,6 @@ const App: React.FC = () => {
                     </button>
                   </div>
                 </div>
-                <p className="text-xs text-zinc-500">
-                  Need an API key? Get one from <a href="https://makersuite.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 underline">Google AI Studio</a>
-                </p>
               </CardContent>
             </Card>
           )}

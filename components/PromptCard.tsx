@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { VideoPrompt } from '../types.ts';
-import { transformPromptToJson } from '../services/geminiService.ts';
+import { transformPromptToJson } from '../services/llm/router.ts';
 import FilmIcon from './icons/FilmIcon.tsx';
 import ClipboardIcon from './icons/ClipboardIcon.tsx';
 import CheckIcon from './icons/CheckIcon.tsx';
