@@ -96,12 +96,61 @@ const cameraMovementOptions = [
     'Handheld', 'Drone Shot', 'Tracking Shot', 'Roll Clockwise', 'Roll Counter-Clockwise'
 ];
 
+const cameraDeviceGroups = [
+  {
+    label: '📱 Cell Phone Styles',
+    options: [
+      'iPhone 15 Pro Max (48MP, cinematic mode)',
+      'iPhone 14 Pro (natural HDR look)',
+      'iPhone 11 (softer colors, less dynamic range)',
+      'Google Pixel 8 Pro (computational photography sharpness)',
+      'Google Pixel 6 (contrasty HDR+)',
+      'Samsung Galaxy S24 Ultra (200MP detail, saturated colors)',
+      'Samsung Galaxy S10 (early AI processing look)',
+      'Nokia Lumia 1020 (oversized sensor vintage mobile look)',
+      'Motorola Razr V3 (low-res, 2000s flip-phone aesthetic)',
+      'Early 2010s Android (grainy, overexposed night shots)'
+    ],
+  },
+  {
+    label: '🎞 Analog / Film Cameras',
+    options: [
+      'Polaroid SX-70 (instant film, warm soft focus)',
+      'Polaroid 600 (classic 80s/90s instant film look)',
+      '35mm Kodak Gold 200 (warm consumer film)',
+      '35mm Fuji Superia 400 (cooler tones, grainy)',
+      '35mm Ilford HP5 (black & white, high contrast)',
+      '120mm Medium Format Hasselblad 500C/M (rich tonal range)',
+      'Super 8mm film camera (grainy motion, vintage warmth)',
+      '16mm film (documentary/indie look)',
+      'Large format 4x5 camera (razor sharp, shallow depth of field)',
+      'Lomography Diana F+ (plastic lens, dreamy vignetting)'
+    ],
+  },
+  {
+    label: '🎥 High-End Digital Cinema Cameras',
+    options: [
+      'ARRI Alexa 35 (cinema-grade dynamic range) + Master Prime lens',
+      'ARRI Alexa Mini LF + Cooke Anamorphic/i lens (cinematic flares, oval bokeh)',
+      'RED Komodo 6K + Canon CN-E cine lens (crisp, clinical detail)',
+      'RED V-Raptor 8K VV + Sigma Cine Prime (hyper-detailed large format)',
+      'Sony Venice 2 + Zeiss Supreme Prime (film-like smoothness)',
+      'Canon C300 Mark III + Canon L-Series zoom (docu-style versatility)',
+      'Blackmagic URSA Mini Pro 12K + Tokina Vista Prime (ultra-high-res clarity)',
+      'Panasonic Varicam LT + Fujinon Cabrio zoom (broadcast cinematic look)',
+      'Leica SL2-S + Leica Noctilux (luxury photography aesthetic)',
+      'Hasselblad X2D 100C + XCD 80mm f/1.9 (medium-format depth)'
+    ],
+  },
+] as const;
+
 const App: React.FC = () => {
   const [scene, setScene] = useState<string>('');
   const [style, setStyle] = useState<string>('');
   const [protagonistAction, setProtagonistAction] = useState<string>('');
   const [cameraAngle, setCameraAngle] = useState<string>('');
   const [cameraMovement, setCameraMovement] = useState<string>('');
+  const [cameraDevice, setCameraDevice] = useState<string>('');
   const [lighting, setLighting] = useState<string[]>([]);
   
   const [prompts, setPrompts] = useState<VideoPrompt[]>([]);
@@ -139,12 +188,13 @@ const App: React.FC = () => {
     const actionWords = countWords(protagonistAction);
     const angleWords = countWords(cameraAngle);
     const movementWords = countWords(cameraMovement);
+    const deviceWords = countWords(cameraDevice);
     const lightingWords = countWords(lighting.join(' '));
 
-    const totalWords = sceneWords + styleWords + actionWords + angleWords + movementWords + lightingWords;
+    const totalWords = sceneWords + styleWords + actionWords + angleWords + movementWords + deviceWords + lightingWords;
     setWordCount(totalWords);
 
-  }, [scene, style, protagonistAction, cameraAngle, cameraMovement, lighting]);
+  }, [scene, style, protagonistAction, cameraAngle, cameraMovement, cameraDevice, lighting]);
 
   const handleApiKeySubmit = () => {
     if (apiKey.trim()) {
@@ -233,7 +283,8 @@ const App: React.FC = () => {
         cameraAngle, 
         cameraMovement, 
         lighting: lighting.join(', '),
-        isNsfw: isNsfwMode 
+        isNsfw: isNsfwMode,
+        cameraDevice,
       });
       setPrompts(generatedPrompts);
     } catch (err) {
@@ -241,7 +292,7 @@ const App: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [scene, style, protagonistAction, cameraAngle, cameraMovement, lighting, loading, isNsfwMode]);
+  }, [scene, style, protagonistAction, cameraAngle, cameraMovement, cameraDevice, lighting, loading, isNsfwMode]);
 
   const renderContent = () => {
     if (loading) {
@@ -484,6 +535,19 @@ const App: React.FC = () => {
                 <select id="cameraMovement" value={cameraMovement} onChange={(e) => setCameraMovement(e.target.value)} className={formSelectClass} disabled={loading}>
                    <option value="">None</option>
                    {cameraMovementOptions.map(option => <option key={option} value={option}>{option}</option>)}
+                </select>
+              </div>
+              <div>
+                <label htmlFor="cameraDevice" className={formLabelClass}>Camera/Device</label>
+                <select id="cameraDevice" value={cameraDevice} onChange={(e) => setCameraDevice(e.target.value)} className={formSelectClass} disabled={loading}>
+                  <option value="">None</option>
+                  {cameraDeviceGroups.map(group => (
+                    <optgroup key={group.label} label={group.label}>
+                      {group.options.map(option => (
+                        <option key={option} value={option}>{option}</option>
+                      ))}
+                    </optgroup>
+                  ))}
                 </select>
               </div>
               

@@ -58,6 +58,7 @@ export async function generatePrompts(params: {
   cameraMovement: string;
   lighting: string;
   isNsfw: boolean;
+  cameraDevice?: string;
 }): Promise<VideoPrompt[]> {
   const provider = getActiveProvider();
   if (provider !== 'gemini') {

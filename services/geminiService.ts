@@ -99,6 +99,7 @@ interface PromptGenerationParams {
     cameraMovement: string;
     lighting: string;
     isNsfw: boolean;
+    cameraDevice?: string;
 }
 
 interface CaptionGenerationParams {
@@ -172,7 +173,7 @@ Video Prompt: "${promptText}"`;
 
 export const generatePrompts = async (params: PromptGenerationParams): Promise<VideoPrompt[]> => {
   try {
-    const { scene, style, protagonistAction, cameraAngle, cameraMovement, lighting, isNsfw } = params;
+    const { scene, style, protagonistAction, cameraAngle, cameraMovement, lighting, isNsfw, cameraDevice } = params;
     
     const examples = `**Example 1 (Narrative with Camera Action):** "A little girl, lost in the city and separated from her parents in New York's Times Square, looks up. The camera tilts up, following her gaze. Starting from the ground, it slowly reveals the massive, glittering, and dizzying skyscrapers and billboards, powerfully emphasizing her smallness and helplessness in a vast world."
 
@@ -212,6 +213,7 @@ Now, using the following criteria, generate 3 new variations. For each variation
 - **Protagonist Action:** "${protagonistAction}"
 - **Camera Angle:** "${cameraAngle}"
 - **Camera Movement:** "${cameraMovement}"
+- **Camera/Device:** "${cameraDevice ?? ''}"
 - **Lighting:** "${lighting}"`;
 
     const model = getAI().getGenerativeModel({ 
