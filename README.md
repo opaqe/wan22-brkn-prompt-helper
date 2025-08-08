@@ -166,9 +166,26 @@ This project is configured for deployment on Vercel and other modern hosting pla
 4. Push to the branch: `git push origin feature/new-feature`
 5. Submit a pull request
 
+## 🛡️ Usage Policy (Personal Use Only)
+
+This software is provided for non-commercial use only. You may use, copy, and modify it solely for personal, educational, research, or internal evaluation purposes.
+
+Prohibited uses include, without limitation:
+- Any form of commercial use, monetization, or profit-generating activity
+- Offering the software or its outputs as part of a paid product, service, SaaS, or API
+- Charging for access, hosting paid instances, reselling, sublicensing, or bundling in commercial offerings
+- Advertising-supported distribution or any use intended to derive revenue
+
+Commercial licensing:
+- For any commercial use, you must obtain prior written permission and a commercial license from BRKN.TRIB.
+- Contact: brkn.trib@gmail.com or via GitHub to request permission.
+
+Compliance note: This policy is enforced by the project’s license.
+
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the PolyForm Noncommercial License 1.0.0. Commercial use requires a separate license from BRKN.TRIB. See the LICENSE file for full terms.
+
 
 ## 🆘 Support
 
