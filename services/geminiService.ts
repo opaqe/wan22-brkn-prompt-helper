@@ -1,11 +1,28 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { VideoPrompt } from '../types.ts';
 
-if (!process.env.API_KEY) {
-    throw new Error("API_KEY environment variable is not set.");
-}
+let ai: GoogleGenAI | null = null;
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const getApiKey = (): string | null => {
+  try {
+    const fromEnv = (process.env.API_KEY as string) || (process.env.GEMINI_API_KEY as string);
+    const fromStorage = typeof window !== 'undefined' ? window.localStorage.getItem('GEMINI_API_KEY') : null;
+    return fromEnv || fromStorage || null;
+  } catch {
+    return (process.env.API_KEY as string) || (process.env.GEMINI_API_KEY as string) || null;
+  }
+};
+
+const getAI = (): GoogleGenAI => {
+  if (!ai) {
+    const key = getApiKey();
+    if (!key) {
+      throw new Error("Gemini API key is not configured. Set GEMINI_API_KEY at build time or save it in localStorage under 'GEMINI_API_KEY'.");
+    }
+    ai = new GoogleGenAI({ apiKey: key });
+  }
+  return ai;
+};
 
 const promptsSchema = {
   type: Type.ARRAY,
@@ -96,7 +113,7 @@ export const generateCaptionFromImage = async (params: CaptionGenerationParams):
             text: prompt,
         };
 
-        const response = await ai.models.generateContent({
+        const response = await getAI().models.generateContent({
             model: 'gemini-2.5-flash',
             contents: { parts: [imagePart, textPart] },
             config: {
@@ -122,7 +139,7 @@ export const transformPromptToJson = async (promptText: string): Promise<object>
 
 Video Prompt: "${promptText}"`;
         
-        const response = await ai.models.generateContent({
+        const response = await getAI().models.generateContent({
             model: "gemini-2.5-flash",
             contents: prompt,
             config: {
@@ -189,7 +206,7 @@ Now, using the following criteria, generate 3 new variations. For each variation
 - **Camera Movement:** "${cameraMovement}"
 - **Lighting:** "${lighting}"`;
 
-    const response = await ai.models.generateContent({
+    const response = await getAI().models.generateContent({
       model: "gemini-2.5-flash",
       contents: prompt,
       config: {
