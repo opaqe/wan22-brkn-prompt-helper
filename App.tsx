@@ -91,9 +91,44 @@ const cameraAngleOptions = [
 ];
 
 const cameraMovementOptions = [
-    'Static', 'Pan Left', 'Pan Right', 'Tilt Up', 'Tilt Down', 'Zoom In', 'Zoom Out',
-    'Dolly In', 'Dolly Out', 'Truck Left', 'Truck Right', 'Crane Up', 'Crane Down',
-    'Handheld', 'Drone Shot', 'Tracking Shot', 'Roll Clockwise', 'Roll Counter-Clockwise'
+  'Locked-off tripod shot',
+  'Static wide shot',
+  'Static close-up',
+  "Static overhead / bird's-eye view",
+  "Static low angle / worm's-eye view",
+  'Static Dutch tilt (angled horizon)',
+  'Symmetrical frontal shot',
+
+  'Slow push-in (dolly in)',
+  'Slow pull-out (dolly out)',
+  'Steadicam tracking forward',
+  'Steadicam tracking backward',
+  'Side-to-side tracking (dolly left/right)',
+  'Slow crane up (revealing)',
+  'Crane down to subject',
+  'Push-in + tilt up combo',
+  'Orbiting shot (circular movement around subject)',
+  'Parallax tracking (foreground/background shift)',
+  'Slow truck + pan',
+  'Lateral slider movement',
+  'Following handheld shot',
+  'Low tracking shot along ground',
+  'Pedestal rise or drop',
+
+  'Handheld shaky cam (documentary style)',
+  'Smooth gimbal movement',
+  'Whip pan (fast blur transition)',
+  'Rack focus during movement',
+  'Slow 360° rotation around subject',
+  'Vertigo shot / dolly zoom (Hitchcock effect)',
+  'Over-the-shoulder tracking shot',
+  'POV walking shot',
+  'POV falling shot (camera tilts and drops)',
+  'First-person “headcam” movement',
+  'Overhead drone pull-away',
+  'Drone fly-through (narrow space)',
+  'Underwater tracking',
+  'Long take / continuous uncut shot',
 ];
 
 const cameraDeviceGroups = [
