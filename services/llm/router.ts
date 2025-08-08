@@ -7,8 +7,18 @@ import {
   generateCaptionFromImage as geminiGenerateCaption,
   transformPromptToJson as geminiTransformToJson,
 } from '../geminiService';
+import {
+  generatePrompts as qwenGeneratePrompts,
+  generateCaptionFromImage as qwenGenerateCaption,
+  transformPromptToJson as qwenTransformToJson,
+} from '../providers/qwenService';
+import {
+  generatePrompts as ollamaGeneratePrompts,
+  generateCaptionFromImage as ollamaGenerateCaption,
+  transformPromptToJson as ollamaTransformToJson,
+} from '../providers/ollamaService';
 
-export type LLMProvider = 'gemini' | 'openai' | 'anthropic' | 'stability' | 'perplexity';
+export type LLMProvider = 'gemini' | 'openai' | 'anthropic' | 'stability' | 'perplexity' | 'qwen' | 'ollama';
 
 export const PROVIDERS: Record<LLMProvider, { label: string; storageKey: string }> = {
   gemini: { label: 'Google Gemini', storageKey: 'GEMINI_API_KEY' },
@@ -16,6 +26,8 @@ export const PROVIDERS: Record<LLMProvider, { label: string; storageKey: string 
   anthropic: { label: 'Anthropic', storageKey: 'ANTHROPIC_API_KEY' },
   stability: { label: 'Stability AI', storageKey: 'STABILITY_API_KEY' },
   perplexity: { label: 'Perplexity', storageKey: 'PERPLEXITY_API_KEY' },
+  qwen: { label: 'Qwen (DashScope)', storageKey: 'QWEN_API_KEY' },
+  ollama: { label: 'Ollama (Local)', storageKey: 'OLLAMA_BASE_URL' },
 };
 
 const ACTIVE_PROVIDER_KEY = 'LLM_PROVIDER';
@@ -61,26 +73,50 @@ export async function generatePrompts(params: {
   cameraDevice?: string;
 }): Promise<VideoPrompt[]> {
   const provider = getActiveProvider();
-  if (provider !== 'gemini') {
-    console.warn(`[LLM Router] Provider "${provider}" not implemented yet. Falling back to Gemini.`);
+  switch (provider) {
+    case 'qwen':
+      return qwenGeneratePrompts(params);
+    case 'ollama':
+      return ollamaGeneratePrompts(params);
+    case 'gemini':
+    default:
+      if (provider !== 'gemini') {
+        console.warn(`[LLM Router] Provider "${provider}" not fully implemented. Falling back to Gemini.`);
+      }
+      return geminiGeneratePrompts(params);
   }
-  return geminiGeneratePrompts(params);
 }
 
 export async function generateCaptionFromImage(params: { imageData: string; mimeType: string }): Promise<string[]> {
   const provider = getActiveProvider();
-  if (provider !== 'gemini') {
-    console.warn(`[LLM Router] Provider "${provider}" image captioning not implemented yet. Falling back to Gemini.`);
+  switch (provider) {
+    case 'qwen':
+      return qwenGenerateCaption(params);
+    case 'ollama':
+      return ollamaGenerateCaption(params);
+    case 'gemini':
+    default:
+      if (provider !== 'gemini') {
+        console.warn(`[LLM Router] Provider "${provider}" image captioning not fully implemented. Falling back to Gemini.`);
+      }
+      return geminiGenerateCaption(params);
   }
-  return geminiGenerateCaption(params);
 }
 
 export async function transformPromptToJson(promptText: string): Promise<object> {
   const provider = getActiveProvider();
-  if (provider !== 'gemini') {
-    console.warn(`[LLM Router] Provider "${provider}" transform-to-JSON not implemented yet. Falling back to Gemini.`);
+  switch (provider) {
+    case 'qwen':
+      return qwenTransformToJson(promptText);
+    case 'ollama':
+      return ollamaTransformToJson(promptText);
+    case 'gemini':
+    default:
+      if (provider !== 'gemini') {
+        console.warn(`[LLM Router] Provider "${provider}" transform-to-JSON not fully implemented. Falling back to Gemini.`);
+      }
+      return geminiTransformToJson(promptText);
   }
-  return geminiTransformToJson(promptText);
 }
 
 export function isApiKeySet(provider: LLMProvider = getActiveProvider()): boolean {
