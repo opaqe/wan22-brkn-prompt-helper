@@ -98,11 +98,11 @@ const cameraMovementOptions = [
 
 const App: React.FC = () => {
   const [scene, setScene] = useState<string>('');
-  const [style, setStyle] = useState<string>(styleOptions[0]);
-  const [protagonistAction, setProtagonistAction] = useState<string>(protagonistActionOptions[0]);
-  const [cameraAngle, setCameraAngle] = useState<string>('Wide Shot');
-  const [cameraMovement, setCameraMovement] = useState<string>('Static');
-  const [lighting, setLighting] = useState<string[]>(['Golden Hour']);
+  const [style, setStyle] = useState<string>('');
+  const [protagonistAction, setProtagonistAction] = useState<string>('');
+  const [cameraAngle, setCameraAngle] = useState<string>('');
+  const [cameraMovement, setCameraMovement] = useState<string>('');
+  const [lighting, setLighting] = useState<string[]>([]);
   
   const [prompts, setPrompts] = useState<VideoPrompt[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -163,8 +163,8 @@ const App: React.FC = () => {
     setIsNsfwMode(prev => {
         const newMode = !prev;
         // Reset fields to defaults for the new mode to avoid invalid combinations
-        setStyle(newMode ? nsfwStyleOptions[0] : styleOptions[0]);
-        setProtagonistAction(newMode ? nsfwProtagonistActionOptions[0] : protagonistActionOptions[0]);
+        setStyle('');
+        setProtagonistAction('');
         // Clear previous results and errors
         setPrompts([]);
         setError(null);
@@ -461,25 +461,29 @@ const App: React.FC = () => {
               <div>
                 <label htmlFor="style" className={formLabelClass}>Style</label>
                 <select id="style" value={style} onChange={(e) => setStyle(e.target.value)} className={formSelectClass} disabled={loading}>
-                  {currentStyleOptions.map(option => <option key={option}>{option}</option>)}
+                  <option value="">None</option>
+                  {currentStyleOptions.map(option => <option key={option} value={option}>{option}</option>)}
                 </select>
               </div>
                <div>
                 <label htmlFor="protagonistAction" className={formLabelClass}>Protagonist Action</label>
                 <select id="protagonistAction" value={protagonistAction} onChange={(e) => setProtagonistAction(e.target.value)} className={formSelectClass} disabled={loading}>
-                  {currentProtagonistActionOptions.map(option => <option key={option}>{option}</option>)}
+                  <option value="">None</option>
+                  {currentProtagonistActionOptions.map(option => <option key={option} value={option}>{option}</option>)}
                 </select>
               </div>
               <div>
                 <label htmlFor="cameraAngle" className={formLabelClass}>Camera Angle</label>
                 <select id="cameraAngle" value={cameraAngle} onChange={(e) => setCameraAngle(e.target.value)} className={formSelectClass} disabled={loading}>
-                  {cameraAngleOptions.map(option => <option key={option}>{option}</option>)}
+                  <option value="">None</option>
+                  {cameraAngleOptions.map(option => <option key={option} value={option}>{option}</option>)}
                 </select>
               </div>
               <div>
                 <label htmlFor="cameraMovement" className={formLabelClass}>Camera Movement</label>
                 <select id="cameraMovement" value={cameraMovement} onChange={(e) => setCameraMovement(e.target.value)} className={formSelectClass} disabled={loading}>
-                   {cameraMovementOptions.map(option => <option key={option}>{option}</option>)}
+                   <option value="">None</option>
+                   {cameraMovementOptions.map(option => <option key={option} value={option}>{option}</option>)}
                 </select>
               </div>
               
