@@ -5,7 +5,8 @@ A powerful AI-powered prompt generation tool built with React, TypeScript, and G
 ## 🚀 Features
 
 - **Multi-format Prompt Generation**: Create prompts for images, videos, clapperboard scenes, JSON data, and custom formats
-- **AI-Powered Suggestions**: Leverages Google Gemini AI for intelligent prompt generation
+- **Provider-agnostic LLM selection**: Choose between Google Gemini, OpenAI, Anthropic, Stability AI, and Perplexity directly in the app
+- **AI-Powered Suggestions**: Intelligent prompt generation powered by your selected provider (Gemini by default)
 - **Interactive UI**: Modern, responsive interface built with Radix UI components
 - **Real-time Generation**: Fast and efficient prompt creation with loading states
 - **Customizable Settings**: Configurable AI parameters and preferences
@@ -15,7 +16,7 @@ A powerful AI-powered prompt generation tool built with React, TypeScript, and G
 
 - **Frontend**: React 18, TypeScript, Vite
 - **Styling**: Tailwind CSS, Radix UI
-- **AI Integration**: Google Generative AI (Gemini)
+- **LLM Integration**: Provider-agnostic router (Gemini, OpenAI, Anthropic, Stability AI, Perplexity)
 - **State Management**: TanStack Query
 - **Routing**: React Router DOM
 - **Icons**: Lucide React
@@ -26,7 +27,7 @@ A powerful AI-powered prompt generation tool built with React, TypeScript, and G
 
 - Node.js (v18 or higher)
 - Bun package manager
-- Google Gemini API Key
+- An API key for at least one supported LLM provider (see links below)
 
 ## 🚀 Quick Start
 
@@ -41,52 +42,64 @@ A powerful AI-powered prompt generation tool built with React, TypeScript, and G
    bun install
    ```
 
-3. **Set up environment variables**
-   Create a `.env.local` file in the root directory:
-   ```env
-   GEMINI_API_KEY=your_gemini_api_key_here
-   ```
-
-4. **Start the development server**
+3. **Start the development server**
    ```bash
    bun run dev
    ```
 
-5. **Open your browser**
+4. **Open your browser**
    Navigate to `http://localhost:8080`
+
+5. **Select provider and add your API key**
+   In the app, click the gear icon (Settings) → choose your LLM provider → paste your API key → Save.
+   Keys are stored securely in your browser's localStorage; no .env is required for normal use.
 
 ## 📁 Project Structure
 
 ```
+services/               # LLM provider services (root-level)
+├── llm/router.ts       # Provider-agnostic LLM router (select & store keys)
+└── geminiService.ts    # Gemini AI integration
+
 src/
 ├── components/          # Reusable UI components
-│   ├── ui/             # Shadcn/UI components
-│   ├── icons/          # Custom icon components
-│   ├── Header.tsx      # App header
-│   ├── Footer.tsx      # App footer
+│   ├── ui/              # Shadcn/UI components
+│   ├── icons/           # Custom icon components
+│   ├── Header.tsx       # App header
+│   ├── Footer.tsx       # App footer
 │   └── ...
-├── pages/              # Page components
-│   ├── Index.tsx       # Main page
-│   └── NotFound.tsx    # 404 page
-├── services/           # API services
-│   └── geminiService.ts # Gemini AI integration
-├── lib/                # Utility functions
-│   └── utils.ts        # Common utilities
-├── hooks/              # Custom React hooks
-└── styles/             # Global styles
+├── pages/               # Page components
+│   ├── Index.tsx        # Main page
+│   └── NotFound.tsx     # 404 page
+├── lib/                 # Utility functions
+│   └── utils.ts         # Common utilities
+├── hooks/               # Custom React hooks
+└── styles/              # Global styles
 ```
 
 ## 🔧 Configuration
 
-### Environment Variables
+### LLM Providers & API Keys
 
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `GEMINI_API_KEY` | Your Google Gemini API key | Yes |
+This app supports multiple providers via the in-app Settings dialog:
+- Google Gemini — Get API key: https://aistudio.google.com/app/apikey
+- OpenAI — Get API key: https://platform.openai.com/api-keys
+- Anthropic — Get API key: https://console.anthropic.com/settings/keys
+- Stability AI — Get API key: https://platform.stability.ai/account/keys
+- Perplexity — Get API key: https://www.perplexity.ai/settings/api (Docs: https://docs.perplexity.ai/docs/get-started)
 
-### API Configuration
+### How keys are stored
 
-The app uses Google's Gemini AI API. Get your API key from [Google AI Studio](https://makersuite.google.com/app/apikey).
+- Open Settings (gear icon) → choose a Provider → paste your API key → Save.
+- Keys are stored in localStorage under:
+  - `GEMINI_API_KEY`
+  - `OPENAI_API_KEY`
+  - `ANTHROPIC_API_KEY`
+  - `STABILITY_API_KEY`
+  - `PERPLEXITY_API_KEY`
+- The active provider is stored under `LLM_PROVIDER`.
+
+Note: Non-Gemini providers may currently fall back to Gemini until their direct integrations are enabled (see `services/llm/router.ts`).
 
 ## 🎨 Available Prompt Types
 
