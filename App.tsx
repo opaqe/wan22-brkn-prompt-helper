@@ -192,15 +192,45 @@ const protagonistActionOptions = [
 const nsfwStyleGroups = [
   {
     label: '💫 Soft & Suggestive',
-    options: ['Sensual', 'Intimate Portrait'],
+    options: [
+      'Sensual',
+      'Intimate Portrait',
+      'Boudoir',
+      'Soft-focus Dream',
+      'Romantic Glow',
+      'Suggestive Tease',
+      'Lingerie Editorial',
+      'Playful Pin-up',
+      'Voyeuristic Glimpse',
+    ],
   },
   {
     label: '🔥 Erotic & Provocative',
-    options: ['Erotic', 'Provocative'],
+    options: [
+      'Erotic',
+      'Provocative',
+      'Dark Fantasy',
+      'Arthouse Erotic',
+      'Taboo',
+      'Fetish Fashion',
+      'Striptease Moment',
+      'Erotic Dance',
+      'Body Worship',
+      'Teasing Reveal',
+    ],
   },
   {
     label: '🎭 Stylized Erotic Genres',
-    options: ['Dark Fantasy'],
+    options: [
+      'Gritty Realism',
+      'Film Noir Erotic',
+      'Neo-Noir Erotic',
+      'Baroque Sensuality',
+      'Giallo Erotic Horror',
+      'FemDom Focus',
+      'Submissive Perspective',
+      'Roleplay Scenario (nurse, teacher, maid, etc.)',
+    ],
   },
 ] as const;
 const nsfwProtagonistActionOptions = [
