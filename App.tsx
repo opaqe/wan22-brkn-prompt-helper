@@ -94,12 +94,98 @@ const styleOptions = [
     'Night photography / low light',
 ];
 const protagonistActionOptions = [
-    'Standing still', 'Walking towards camera', 'Walking away from camera', 'Running', 'Sitting down',
-    'Looking at themself in a mirror', 'Dancing', 'Jumping with joy', 'Turning their back', 'Looking directly at the camera',
-    'Interacting with an object', 'Crying', 'Laughing', 'Fighting', 'Exploring the environment', 'Driving a car',
-    'Riding a skateboard', 'Riding a bicycle', 'Riding a horse', 'Swimming', 'Typing on a keyboard', 'Talking on the phone',
-    'Reading a book', 'Opening a door', 'Painting on a canvas', 'Playing a guitar', 'Cooking a meal',
-    'Eating a meal', 'Working out', 'Meditating', 'Singing',
+  // 🚶 Movement & Body Position
+  'Walking away from camera',
+  'Walking toward camera',
+  'Running',
+  'Sprinting',
+  'Sitting down',
+  'Standing still',
+  'Kneeling',
+  'Lying down (on back, side, or stomach)',
+  'Crouching',
+  'Leaning against a wall or object',
+  'Balancing on a narrow surface',
+  'Stretching',
+
+  // 💃 Expressive / Performance Actions
+  'Dancing',
+  'Jumping with joy',
+  'Spinning / twirling',
+  'Striking a pose',
+  'Gesturing dramatically',
+  'Clapping hands',
+  'Bowing',
+  'Mimicking / acting out a role',
+
+  // 🗣 Interaction with Camera & Audience
+  'Looking directly at the camera',
+  'Looking away thoughtfully',
+  'Turning their back',
+  'Peeking over shoulder',
+  'Winking',
+  'Blowing a kiss',
+  'Pointing at the camera',
+  'Narrating or speaking to viewer',
+
+  // 🪞 Object & Environment Interaction
+  'Looking at themself in a mirror',
+  'Interacting with an object (holding, using, inspecting)',
+  'Touching a surface (wall, table, tree)',
+  'Reading a book or paper',
+  'Drinking from a cup/bottle',
+  'Opening or closing a door',
+  'Picking something up from the ground',
+  'Throwing an object',
+  'Carrying a bag, box, or tool',
+
+  // 😊 Emotional Expression
+  'Crying',
+  'Laughing',
+  'Smiling warmly',
+  'Frowning',
+  'Shouting / yelling',
+  'Whispering',
+  'Sighing',
+  'Showing surprise (hands to mouth, wide eyes)',
+  'Showing fear (backing away, covering face)',
+
+  // ⚔️ Physical Action & Sports
+  'Fighting (hand-to-hand or with weapon)',
+  'Practicing martial arts',
+  'Running obstacle course',
+  'Climbing (wall, ladder, tree)',
+  'Driving a car',
+  'Riding a skateboard',
+  'Riding a bicycle',
+  'Riding a horse',
+  'Swimming',
+  'Surfing',
+  'Skiing or snowboarding',
+  'Throwing a ball',
+  'Lifting weights',
+
+  // 🌍 Exploration & Environment Engagement
+  'Exploring the environment',
+  'Inspecting surroundings',
+  'Hiking through nature',
+  'Walking in the rain',
+  'Looking at the sky or stars',
+  'Following a trail',
+  'Entering a building',
+  'Searching for something',
+  'Digging or uncovering an object',
+
+  // 🧩 Everyday Activities (from previous list)
+  'Typing on a keyboard',
+  'Talking on the phone',
+  'Painting on a canvas',
+  'Playing a guitar',
+  'Cooking a meal',
+  'Eating a meal',
+  'Working out',
+  'Meditating',
+  'Singing',
 ];
 
 // NSFW 18+ Options
