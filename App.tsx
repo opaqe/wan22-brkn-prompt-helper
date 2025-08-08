@@ -676,16 +676,15 @@ const currentProtagonistActionOptions = isNsfwMode ? nsfwProtagonistActionOption
                 <label htmlFor="style" className={formLabelClass}>Style</label>
 <select id="style" value={style} onChange={(e) => setStyle(e.target.value)} className={formSelectClass} disabled={loading}>
                   <option value="">None</option>
-                  {isNsfwMode ? (
-                    nsfwStyleGroups.map(group => (
-                      <optgroup key={group.label} label={group.label}>
-                        {group.options.map(option => (
-                          <option key={option} value={option}>{option}</option>
-                        ))}
-                      </optgroup>
-                    ))
-                  ) : (
-                    styleOptions.map(option => <option key={option} value={option}>{option}</option>)
+                  {styleOptions.map(option => (
+                    <option key={option} value={option}>{option}</option>
+                  ))}
+                  {isNsfwMode && (
+                    <optgroup label="🔴 NSFW Style">
+                      {nsfwStyleGroups.flatMap(group => group.options).map(option => (
+                        <option key={option} value={option}>{option}</option>
+                      ))}
+                    </optgroup>
                   )}
                 </select>
               </div>
