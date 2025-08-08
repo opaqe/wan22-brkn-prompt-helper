@@ -107,30 +107,37 @@ interface CaptionGenerationParams {
     mimeType: string;
 }
 
-export const generateCaptionFromImage = async (params: CaptionGenerationParams): Promise<string> => {
+export const generateCaptionFromImage = async (params: CaptionGenerationParams): Promise<string[]> => {
     try {
         const { imageData, mimeType } = params;
 
-        const prompt = "Analyze this image in detail. Generate a rich, descriptive caption in the style of the Florence-2-large model. Describe the objects, their attributes, their relationships, and the overall scene composition. This caption will be used as the starting point for a video prompt.";
+        const prompt = "Analyze this image and produce exactly 3 rich, distinct caption options (1–2 sentences each) describing the objects, attributes, relationships, and overall composition. Return only a JSON array of strings.";
 
-        const imagePart = {
-            inlineData: {
-                data: imageData,
-                mimeType: mimeType,
-            },
-        };
+        const model = getAI().getGenerativeModel({
+            model: 'gemini-1.5-flash',
+            generationConfig: {
+                responseMimeType: 'application/json',
+                responseSchema: {
+                    type: SchemaType.ARRAY,
+                    items: { type: SchemaType.STRING }
+                },
+                temperature: 0.7,
+            }
+        });
 
-        const textPart = {
-            text: prompt,
-        };
-
-        const model = getAI().getGenerativeModel({ model: 'gemini-1.5-flash' });
         const response = await model.generateContent([
-            { inlineData: { data: imageData, mimeType: mimeType } },
+            { inlineData: { data: imageData, mimeType } },
             prompt
         ]);
 
-        return response.response.text();
+        const jsonText = response.response.text().trim();
+        const captions = JSON.parse(jsonText);
+
+        if (!Array.isArray(captions)) {
+            throw new Error("API did not return an array of captions.");
+        }
+
+        return captions as string[];
 
     } catch (error) {
         console.error("Error generating caption from image:", error);

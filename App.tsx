@@ -356,6 +356,9 @@ const App: React.FC = () => {
   const [imageBase64, setImageBase64] = useState<string | null>(null);
   const [isCaptioning, setIsCaptioning] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [captions, setCaptions] = useState<string[]>([]);
+  const [selectedCaptionIndex, setSelectedCaptionIndex] = useState<number | null>(null);
+  const sceneTextareaRef = useRef<HTMLTextAreaElement>(null);
   
   const [isNsfwMode, setIsNsfwMode] = useState<boolean>(false);
   const [wordCount, setWordCount] = useState<number>(0);
@@ -427,6 +430,8 @@ const App: React.FC = () => {
         return;
       }
       setImageFile(file);
+      setCaptions([]);
+      setSelectedCaptionIndex(null);
       const reader = new FileReader();
       reader.onloadend = () => {
         setImageBase64(reader.result as string);
@@ -434,7 +439,6 @@ const App: React.FC = () => {
       reader.readAsDataURL(file);
     }
   };
-  
   const handleCaptionImage = async () => {
       if (!imageFile || !imageBase64) return;
       
@@ -444,18 +448,18 @@ const App: React.FC = () => {
       try {
           // The base64 string from FileReader includes the data URL prefix, which needs to be removed.
           const base64Data = imageBase64.split(',')[1];
-          const caption = await generateCaptionFromImage({
+          const results = await generateCaptionFromImage({
               imageData: base64Data,
               mimeType: imageFile.type,
           });
-          setScene(caption);
+          setCaptions(results);
+          setSelectedCaptionIndex(null);
       } catch (err) {
           setError(err instanceof Error ? err.message : 'An unknown error occurred during captioning.');
       } finally {
           setIsCaptioning(false);
       }
   };
-
   const handleLightingChange = (option: string) => {
     setLighting(prev => 
         prev.includes(option) 
@@ -681,8 +685,63 @@ const currentProtagonistActionOptions = isNsfwMode ? nsfwProtagonistActionOption
                         <p>{error}</p>
                     </div>
                 )}
+                {captions.length > 0 && (
+                  <div className="mt-6">
+                    <h4 className="text-zinc-300 font-medium mb-3">Choose a caption</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {captions.map((cap, i) => (
+                        <Card key={i} className={`border ${selectedCaptionIndex === i ? 'border-red-500' : 'border-zinc-700'} bg-zinc-900/40`}>
+                          <CardHeader className="pb-2">
+                            <CardTitle className="text-sm text-zinc-200">Caption {i + 1}</CardTitle>
+                            <CardDescription className="text-xs text-zinc-400">Click a button below</CardDescription>
+                          </CardHeader>
+                          <CardContent className="space-y-3">
+                            <div className="text-sm text-zinc-300 whitespace-pre-wrap">{cap}</div>
+                            <div className="flex gap-2">
+                              <button
+                                type="button"
+                                className={`${buttonClass} flex-1 bg-red-600 hover:bg-red-500`}
+                                onClick={() => {
+                                  setScene(cap);
+                                  setSelectedCaptionIndex(i);
+                                  setTimeout(() => {
+                                    if (sceneTextareaRef.current) {
+                                      const el = sceneTextareaRef.current;
+                                      el.style.height = 'auto';
+                                      el.style.height = `${el.scrollHeight}px`;
+                                      el.focus();
+                                    }
+                                  }, 0);
+                                }}
+                              >
+                                Use this
+                              </button>
+                              <button
+                                type="button"
+                                className={`${buttonClass} flex-1`}
+                                onClick={() => {
+                                  setScene(prev => (prev ? `${prev} ${cap}` : cap));
+                                  setSelectedCaptionIndex(i);
+                                  setTimeout(() => {
+                                    if (sceneTextareaRef.current) {
+                                      const el = sceneTextareaRef.current;
+                                      el.style.height = 'auto';
+                                      el.style.height = `${el.scrollHeight}px`;
+                                      el.focus();
+                                    }
+                                  }, 0);
+                                }}
+                              >
+                                Append
+                              </button>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </div>
+                )}
             </div>
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="md:col-span-2">
                 <label htmlFor="scene" className={formLabelClass}>
@@ -690,10 +749,16 @@ const currentProtagonistActionOptions = isNsfwMode ? nsfwProtagonistActionOption
                 </label>
                 <textarea
                   id="scene"
+                  ref={sceneTextareaRef}
                   value={scene}
                   onChange={(e) => setScene(e.target.value)}
+                  onInput={(e) => {
+                    const el = e.currentTarget;
+                    el.style.height = 'auto';
+                    el.style.height = `${el.scrollHeight}px`;
+                  }}
                   placeholder="e.g., A robot exploring a futuristic city at night"
-                  className={formTextareaClass}
+                  className={`${formTextareaClass} overflow-hidden`}
                   disabled={loading}
                   rows={4}
                   required

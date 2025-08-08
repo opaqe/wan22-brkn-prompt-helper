@@ -67,7 +67,7 @@ export async function generatePrompts(params: {
   return geminiGeneratePrompts(params);
 }
 
-export async function generateCaptionFromImage(params: { imageData: string; mimeType: string }): Promise<string> {
+export async function generateCaptionFromImage(params: { imageData: string; mimeType: string }): Promise<string[]> {
   const provider = getActiveProvider();
   if (provider !== 'gemini') {
     console.warn(`[LLM Router] Provider "${provider}" image captioning not implemented yet. Falling back to Gemini.`);
