@@ -487,7 +487,20 @@ const App: React.FC = () => {
         isNsfw: isNsfwMode,
         cameraDevice,
       });
+
+      // Save to UI state
       setPrompts(generatedPrompts);
+
+      // Post to Service Worker so the API endpoints can serve this batch
+      const batchId = `prompts_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+      if ('serviceWorker' in navigator) {
+        try {
+          const reg = await navigator.serviceWorker.ready;
+          reg.active?.postMessage({ type: 'PROMPTS_SAVE', id: batchId, prompts: generatedPrompts });
+        } catch (swErr) {
+          console.warn('Could not send prompts to SW', swErr);
+        }
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An unknown error occurred. Please try again.');
     } finally {
