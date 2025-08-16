@@ -31,6 +31,33 @@ A powerful AI-powered prompt generation tool built with React, TypeScript, and G
 
 ## 🚀 Quick Start
 
+### Windows Users (Easy Install)
+
+For Windows users, we provide convenient batch files for easy setup:
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/NUVoize/wan22-brkn-prompt-helper.git
+   cd wan22-brkn-prompt-helper
+   ```
+
+2. **Run the Windows installer**
+   ```bash
+   install-windows.bat
+   ```
+   This will:
+   - Check prerequisites (Node.js, npm/Bun)
+   - Install dependencies automatically
+   - Offer to start the development server
+   - Open the app in your browser
+
+3. **Start the app later (optional)**
+   ```bash
+   start-ui.bat
+   ```
+
+### Manual Installation (All Platforms)
+
 1. **Clone the repository**
    ```bash
    git clone https://github.com/NUVoize/wan22-brkn-prompt-helper.git
@@ -40,11 +67,15 @@ A powerful AI-powered prompt generation tool built with React, TypeScript, and G
 2. **Install dependencies**
    ```bash
    bun install
+   # or
+   npm install
    ```
 
 3. **Start the development server**
    ```bash
    bun run dev
+   # or
+   npm run dev
    ```
 
 4. **Open your browser**
