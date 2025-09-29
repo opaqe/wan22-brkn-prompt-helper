@@ -5,6 +5,8 @@ A powerful AI-powered prompt generation tool built with React, TypeScript, and G
 ## 🚀 Features
 
 - **Multi-format Prompt Generation**: Create prompts for images, videos, clapperboard scenes, JSON data, and custom formats
+- **Multi-Select Dropdowns**: Choose multiple options for Style, NSFW Style, Actions, Camera Angles, Movements, and Lighting
+- **Enhanced AI Caption Generation**: Advanced physical description prompting for protagonist-focused images with detailed physicality guidance
 - **Provider-agnostic LLM selection**: Choose between Google Gemini, OpenAI, Anthropic, Stability AI, and Perplexity directly in the app
 - **AI-Powered Suggestions**: Intelligent prompt generation powered by your selected provider (Gemini by default)
 - **Interactive UI**: Modern, responsive interface built with Radix UI components
@@ -38,6 +40,25 @@ The provided batch files (`install-windows.bat` and `start-ui.bat`) are compatib
 - Systems with or without ANSI color support
 
 ## 🚀 Recent Updates
+
+### Version 2.2.1 - Multi-Select & Enhanced AI Caption Generation
+
+**✨ New UI Features:**
+- **Multi-Select Dropdowns** - Select multiple options for Style, NSFW Style, Protagonist Actions, Camera Angles, Camera Movements, Device Types, and Lighting
+- **Tag Display** - Selected options shown as removable tags for better visibility
+- **Grouped Options** - Organized multi-select options by category for easier navigation
+
+**🎯 Enhanced AI Caption Generation:**
+- **Physical Description Guidance** - AI now leads with detailed physicality descriptions for protagonists
+- **Structured Prompting** - Includes race/ethnicity, hair, body type, breast size, and notable features
+- **Action & Sensory Details** - Follows physical descriptions with actions and sensory information
+- **SFW & NSFW Support** - Enhanced prompting for both content types with appropriate detail levels
+
+**🤖 Technical Improvements:**
+- **Updated Gemini Model** - Now using `gemini-2.5-flash` for improved performance
+- **Better JSON Parsing** - Enhanced error handling and malformed JSON cleanup across all providers
+- **Improved LM Studio Integration** - Better handling of non-standard JSON responses
+- **Provider-Specific Enhancements** - Updated Gemini, Qwen, Ollama, and LM Studio services with enhanced prompting
 
 ### Version 2.2 - Multi-Provider Support & Enhanced Windows Compatibility
 
@@ -129,12 +150,15 @@ services/                    # LLM provider services (root-level)
 src/
 ├── components/          # Reusable UI components
 │   ├── ui/              # Shadcn/UI components
+│   │   ├── multi-select.tsx  # Multi-select dropdown component
+│   │   └── ...          # Other UI components
 │   ├── icons/           # Custom icon components
 │   ├── Header.tsx       # App header
 │   ├── Footer.tsx       # App footer
+│   ├── SettingsDialog.tsx  # Settings configuration
 │   └── ...
 ├── pages/               # Page components
-│   ├── Index.tsx        # Main page
+│   ├── Index.tsx        # Main page with prompt generation
 │   └── NotFound.tsx     # 404 page
 ├── lib/                 # Utility functions
 │   └── utils.ts         # Common utilities
@@ -151,7 +175,7 @@ This app supports multiple providers via the in-app Settings dialog:
 #### **Google Gemini** (Recommended)
 - **API Key**: Get from [Google AI Studio](https://ai.google.dev/gemini-api/docs/get-started)
 - **Custom Base URL**: Optional (leave empty for default Google endpoint)
-- **Models**: Uses `gemini-1.5-flash` for optimal performance
+- **Models**: Uses `gemini-2.5-flash` for optimal performance and enhanced multimodal capabilities
 - **Google Cloud console**: [API key management](https://console.cloud.google.com/apis/credentials)
 
 #### **Qwen (DashScope)**
