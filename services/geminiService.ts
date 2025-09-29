@@ -221,6 +221,18 @@ Return exactly 3 captions as a JSON array of strings.`;
             prompt
         ]);
 
+        // Check if response was blocked
+        const promptFeedback = response.response.promptFeedback;
+        if (promptFeedback?.blockReason) {
+            const blockReason = promptFeedback.blockReason;
+            console.error('Response blocked by Gemini:', blockReason);
+            throw new Error(
+                `Content was blocked by Gemini's safety filters (${blockReason}). ` +
+                `This could be due to the image content or the prompt. ` +
+                `Try a different image or switch to another LLM provider in settings.`
+            );
+        }
+
         console.log('Parsing response...');
         const jsonText = response.response.text().trim();
         console.log('Raw response:', jsonText.substring(0, 200));
@@ -333,6 +345,18 @@ Now, using the following criteria, generate 3 new variations. For each variation
     
     console.log('Generating content...');
     const response = await model.generateContent(prompt);
+
+    // Check if response was blocked
+    const promptFeedback = response.response.promptFeedback;
+    if (promptFeedback?.blockReason) {
+        const blockReason = promptFeedback.blockReason;
+        console.error('Response blocked by Gemini:', blockReason);
+        throw new Error(
+            `Content was blocked by Gemini's safety filters (${blockReason}). ` +
+            `This could be due to your prompt content. ` +
+            `Try adjusting your scene description or switch to another LLM provider in settings.`
+        );
+    }
 
     console.log('Parsing response...');
     const jsonText = response.response.text().trim();
