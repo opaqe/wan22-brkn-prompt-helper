@@ -537,24 +537,24 @@ const App: React.FC = () => {
   const formTextareaClass = "w-full p-2.5 bg-zinc-800 border border-zinc-700 rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none transition duration-200 min-h-[100px] text-base";
   const buttonClass = "flex items-center justify-center px-4 py-2 bg-zinc-700 text-white rounded-lg font-semibold hover:bg-zinc-600 disabled:bg-zinc-800 disabled:text-zinc-500 disabled:cursor-not-allowed transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-zinc-900 focus:ring-red-500";
   
-  // Convert arrays to MultiSelectOption format
-  const currentProtagonistActionOptions = isNsfwMode ? nsfwProtagonistActionOptions : protagonistActionOptions;
-  
-  const styleMultiOptions: MultiSelectOption[] = styleOptions.map(opt => ({ value: opt, label: opt }));
-  
-  const nsfwStyleMultiOptions: MultiSelectOption[] = nsfwStyleGroups.flatMap(group => 
-    group.options.map(opt => ({ value: opt, label: opt, group: group.label }))
-  );
-  
-  const protagonistActionMultiOptions: MultiSelectOption[] = currentProtagonistActionOptions.map(opt => ({ value: opt, label: opt }));
-  
-  const cameraAngleMultiOptions: MultiSelectOption[] = cameraAngleOptions.map(opt => ({ value: opt, label: opt }));
-  
-  const cameraMovementMultiOptions: MultiSelectOption[] = cameraMovementOptions.map(opt => ({ value: opt, label: opt }));
-  
-  const cameraDeviceMultiOptions: MultiSelectOption[] = cameraDeviceGroups.flatMap(group => 
-    group.options.map(opt => ({ value: opt, label: opt, group: group.label }))
-  );
+  // Memoized options to prevent re-computation on every render
+  const multiSelectOptions = React.useMemo(() => {
+    const currentProtagonistActionOptions = isNsfwMode ? nsfwProtagonistActionOptions : protagonistActionOptions;
+    
+    return {
+      style: styleOptions.map(opt => ({ value: opt, label: opt })),
+      nsfwStyle: nsfwStyleGroups.flatMap(group => 
+        group.options.map(opt => ({ value: opt, label: opt, group: group.label }))
+      ),
+      protagonistAction: currentProtagonistActionOptions.map(opt => ({ value: opt, label: opt })),
+      cameraAngle: cameraAngleOptions.map(opt => ({ value: opt, label: opt })),
+      cameraMovement: cameraMovementOptions.map(opt => ({ value: opt, label: opt })),
+      cameraDevice: cameraDeviceGroups.flatMap(group => 
+        group.options.map(opt => ({ value: opt, label: opt, group: group.label }))
+      ),
+      lighting: lightingOptions.map(opt => ({ value: opt, label: opt }))
+    };
+  }, [isNsfwMode]);
 
   return (
     <div className="min-h-screen flex flex-col bg-zinc-900 text-zinc-100 font-sans">
@@ -784,7 +784,7 @@ const App: React.FC = () => {
               <div>
                 <label htmlFor="style" className={formLabelClass}>Style</label>
                 <MultiSelect
-                  options={styleMultiOptions}
+                  options={multiSelectOptions.style}
                   value={style}
                   onChange={setStyle}
                   placeholder="Select styles..."
@@ -795,7 +795,7 @@ const App: React.FC = () => {
                 <div>
                   <label htmlFor="nsfwStyle" className={`${formLabelClass} text-red-300`}>NSFW Style</label>
                   <MultiSelect
-                    options={nsfwStyleMultiOptions}
+                    options={multiSelectOptions.nsfwStyle}
                     value={nsfwStyle}
                     onChange={setNsfwStyle}
                     placeholder="Select NSFW styles..."
@@ -806,7 +806,7 @@ const App: React.FC = () => {
                <div>
                 <label htmlFor="protagonistAction" className={formLabelClass}>Protagonist Action</label>
                 <MultiSelect
-                  options={protagonistActionMultiOptions}
+                  options={multiSelectOptions.protagonistAction}
                   value={protagonistAction}
                   onChange={setProtagonistAction}
                   placeholder="Select actions..."
@@ -816,7 +816,7 @@ const App: React.FC = () => {
               <div>
                 <label htmlFor="cameraAngle" className={formLabelClass}>Camera Angle</label>
                 <MultiSelect
-                  options={cameraAngleMultiOptions}
+                  options={multiSelectOptions.cameraAngle}
                   value={cameraAngle}
                   onChange={setCameraAngle}
                   placeholder="Select camera angles..."
@@ -826,7 +826,7 @@ const App: React.FC = () => {
               <div>
                 <label htmlFor="cameraMovement" className={formLabelClass}>Camera Movement</label>
                 <MultiSelect
-                  options={cameraMovementMultiOptions}
+                  options={multiSelectOptions.cameraMovement}
                   value={cameraMovement}
                   onChange={setCameraMovement}
                   placeholder="Select camera movements..."
@@ -836,7 +836,7 @@ const App: React.FC = () => {
               <div>
                 <label htmlFor="cameraDevice" className={formLabelClass}>Camera/Device</label>
                 <MultiSelect
-                  options={cameraDeviceMultiOptions}
+                  options={multiSelectOptions.cameraDevice}
                   value={cameraDevice}
                   onChange={setCameraDevice}
                   placeholder="Select camera/device..."
@@ -850,7 +850,7 @@ const App: React.FC = () => {
                   Select one or more lighting options to set the mood and atmosphere.
                 </p>
                 <MultiSelect
-                  options={lightingOptions.map(opt => ({ value: opt, label: opt }))}
+                  options={multiSelectOptions.lighting}
                   value={lighting}
                   onChange={setLighting}
                   placeholder="Select lighting options..."
