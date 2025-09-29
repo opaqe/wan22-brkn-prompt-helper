@@ -128,7 +128,7 @@ export const generateCaptionFromImage = async (params: CaptionGenerationParams):
         const prompt = "Analyze this image and produce exactly 3 rich, distinct caption options (1–2 sentences each) describing the objects, attributes, relationships, and overall composition. Return only a JSON array of strings.";
 
         const model = getAI().getGenerativeModel({
-            model: 'gemini-1.5-flash',
+            model: 'gemini-2.5-flash',
             generationConfig: {
                 responseMimeType: 'application/json',
                 responseSchema: {
@@ -170,7 +170,7 @@ export const transformPromptToJson = async (promptText: string): Promise<object>
 Video Prompt: "${promptText}"`;
         
         const model = getAI().getGenerativeModel({ 
-            model: "gemini-1.5-flash",
+            model: "gemini-2.5-flash",
             generationConfig: {
                 responseMimeType: "application/json",
                 responseSchema: promptToJsonSchema,
@@ -238,7 +238,7 @@ Now, using the following criteria, generate 3 new variations. For each variation
 - **Lighting:** "${lighting}"`;
 
     const model = getAI().getGenerativeModel({ 
-      model: "gemini-1.5-flash",
+      model: "gemini-2.5-flash",
       generationConfig: {
         responseMimeType: "application/json",
         responseSchema: promptsSchema,
