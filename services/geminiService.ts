@@ -125,7 +125,24 @@ export const generateCaptionFromImage = async (params: CaptionGenerationParams):
     try {
         const { imageData, mimeType } = params;
 
-        const prompt = "Analyze this image and produce exactly 3 rich, distinct caption options (1–2 sentences each) describing the objects, attributes, relationships, and overall composition. Return only a JSON array of strings.";
+        const prompt = `Analyze this image and produce exactly 3 rich, distinct caption options. When a person is the main subject/protagonist in the image, lead with detailed physicality:
+
+**Lead with Physicality (when applicable):**
+- Race/Ethnicity (Slavic, Asian, African, etc.)
+- Hair color/style
+- Body type and size (petite, athletic, curvy, muscular)
+- Notable features (freckles, dimples, scars, tattoos)
+
+**Then add:**
+- What they're doing (action/pose)
+- Sensory details (how things feel - cool metal, warm skin, rough fabric)
+- Environmental context
+
+**Examples:**
+SFW: "A broad-shouldered African American man with tight curly black hair and defined abs is mid-pullup. His biceps bulge and veins stand out against his dark skin as he strains."
+NSFW: "A petite Asian woman with long black hair, large breasts, and slender legs stands in semi-transparent lingerie. She's around 5'3", her skin is porcelain pale, and a small birthmark sits just below her collarbone."
+
+Return exactly 3 captions as a JSON array of strings.`;
 
         const model = getAI().getGenerativeModel({
             model: 'gemini-2.5-flash',

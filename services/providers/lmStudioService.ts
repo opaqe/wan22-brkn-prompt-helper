@@ -107,12 +107,28 @@ export async function generateCaptionFromImage(params: { imageData: string; mime
   const messages = [
     {
       role: 'system',
-      content: 'Analyze the image and return exactly 3 rich, distinct caption options (1–2 sentences each) as a JSON array of strings. Output JSON only.'
+      content: `Analyze the image and return exactly 3 rich, distinct caption options. When a person is the main subject/protagonist, lead with detailed physicality:
+
+**Lead with Physicality:**
+- Race/Ethnicity (Slavic, Asian, African, etc.)
+- Hair color/style
+- Body type and size (petite, athletic, curvy, muscular)
+- Notable features (freckles, dimples, scars, tattoos)
+
+**Then add:**
+- What they're doing (action/pose)
+- Sensory details (how things feel - cool metal, warm skin, rough fabric)
+
+**Examples:**
+SFW: "A broad-shouldered African American man with tight curly black hair and defined abs is mid-pullup. His biceps bulge and veins stand out against his dark skin."
+NSFW: "A petite Asian woman with long black hair, large breasts, and slender legs stands in semi-transparent lingerie. Her skin is porcelain pale with a small birthmark below her collarbone."
+
+Return exactly 3 captions as a JSON array of strings. Output JSON only.`
     },
     {
       role: 'user',
       content: [
-        { type: 'text', text: 'Analyze this image and return exactly 3 caption options as a JSON array of strings.' },
+        { type: 'text', text: 'Analyze this image following the system instructions for detailed physical descriptions when people are present.' },
         { type: 'image_url', image_url: { url: dataUrl } }
       ]
     }

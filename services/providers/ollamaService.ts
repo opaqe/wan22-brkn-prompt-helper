@@ -68,7 +68,23 @@ async function generate({ prompt, images }: { prompt: string; images?: string[] 
 
 export async function generateCaptionFromImage(params: { imageData: string; mimeType: string }): Promise<string[]> {
   const { imageData } = params;
-  const prompt = 'Analyze the image and return exactly 3 rich, distinct caption options (1–2 sentences each) as a JSON array of strings. Output JSON only.';
+  const prompt = `Analyze the image and return exactly 3 rich, distinct caption options. When a person is the main subject, lead with detailed physicality:
+
+**Lead with Physicality:**
+- Race/Ethnicity (Slavic, Asian, African, etc.)
+- Hair color/style
+- Body type and size (petite, athletic, curvy, muscular)
+- Notable features (freckles, dimples, scars, tattoos)
+
+**Then add:**
+- What they're doing (action/pose)
+- Sensory details (how things feel - cool metal, warm skin, rough fabric)
+
+**Examples:**
+SFW: "A broad-shouldered African American man with tight curly black hair and defined abs is mid-pullup. His biceps bulge and veins stand out against his dark skin."
+NSFW: "A petite Asian woman with long black hair, large breasts, and slender legs stands in semi-transparent lingerie. Her skin is porcelain pale with a small birthmark below her collarbone."
+
+Return exactly 3 captions as a JSON array of strings. Output JSON only.`;
   const text = await generate({ prompt, images: [imageData] });
   const json = extractJson<string[]>(text);
   if (!Array.isArray(json)) throw new Error('Ollama did not return an array.');
