@@ -17,8 +17,13 @@ import {
   generateCaptionFromImage as ollamaGenerateCaption,
   transformPromptToJson as ollamaTransformToJson,
 } from '../providers/ollamaService';
+import {
+  generatePrompts as lmStudioGeneratePrompts,
+  generateCaptionFromImage as lmStudioGenerateCaption,
+  transformPromptToJson as lmStudioTransformToJson,
+} from '../providers/lmStudioService';
 
-export type LLMProvider = 'gemini' | 'openai' | 'anthropic' | 'stability' | 'perplexity' | 'qwen' | 'ollama';
+export type LLMProvider = 'gemini' | 'openai' | 'anthropic' | 'stability' | 'perplexity' | 'qwen' | 'ollama' | 'lmstudio';
 
 export const PROVIDERS: Record<LLMProvider, { label: string; storageKey: string }> = {
   gemini: { label: 'Google Gemini', storageKey: 'GEMINI_API_KEY' },
@@ -28,6 +33,7 @@ export const PROVIDERS: Record<LLMProvider, { label: string; storageKey: string 
   perplexity: { label: 'Perplexity', storageKey: 'PERPLEXITY_API_KEY' },
   qwen: { label: 'Qwen (DashScope)', storageKey: 'QWEN_API_KEY' },
   ollama: { label: 'Ollama (Local)', storageKey: 'OLLAMA_BASE_URL' },
+  lmstudio: { label: 'LM Studio (Local)', storageKey: 'LM_STUDIO_BASE_URL' },
 };
 
 const ACTIVE_PROVIDER_KEY = 'LLM_PROVIDER';
@@ -78,6 +84,8 @@ export async function generatePrompts(params: {
       return qwenGeneratePrompts(params);
     case 'ollama':
       return ollamaGeneratePrompts(params);
+    case 'lmstudio':
+      return lmStudioGeneratePrompts(params);
     case 'gemini':
     default:
       if (provider !== 'gemini') {
@@ -94,6 +102,8 @@ export async function generateCaptionFromImage(params: { imageData: string; mime
       return qwenGenerateCaption(params);
     case 'ollama':
       return ollamaGenerateCaption(params);
+    case 'lmstudio':
+      return lmStudioGenerateCaption(params);
     case 'gemini':
     default:
       if (provider !== 'gemini') {
@@ -110,6 +120,8 @@ export async function transformPromptToJson(promptText: string): Promise<object>
       return qwenTransformToJson(promptText);
     case 'ollama':
       return ollamaTransformToJson(promptText);
+    case 'lmstudio':
+      return lmStudioTransformToJson(promptText);
     case 'gemini':
     default:
       if (provider !== 'gemini') {

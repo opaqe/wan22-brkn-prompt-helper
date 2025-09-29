@@ -19,6 +19,15 @@ const getApiKey = (): string | null => {
   }
 };
 
+const getBaseUrl = (): string | undefined => {
+  try {
+    return typeof window !== 'undefined' ? window.localStorage.getItem('GEMINI_BASE_URL') || undefined : undefined;
+  } catch (error) {
+    console.error('Error getting base URL:', error);
+    return undefined;
+  }
+};
+
 const getAI = (): GoogleGenerativeAI => {
   console.log('Initializing Google Generative AI...');
   const key = getApiKey();
@@ -28,7 +37,12 @@ const getAI = (): GoogleGenerativeAI => {
   }
   
   console.log('Creating GoogleGenerativeAI instance...');
+  const baseUrl = getBaseUrl();
   // Always create a new instance to ensure we use the latest API key from localStorage
+  // Note: Custom base URLs are not officially supported by Google Generative AI SDK
+  if (baseUrl) {
+    console.log('Custom base URL provided, but not supported by official Gemini SDK:', baseUrl);
+  }
   ai = new GoogleGenerativeAI(key);
   console.log('GoogleGenerativeAI instance created successfully');
   return ai;

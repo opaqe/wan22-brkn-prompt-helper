@@ -3,14 +3,23 @@
 // Returns the same shapes as our Gemini service functions
 import type { VideoPrompt } from '../../types';
 
-const DASHCOPE_COMPAT_ENDPOINT = 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions';
+const QWEN_BASE_URL_KEY = 'QWEN_BASE_URL';
 const QWEN_MODEL_DEFAULT = 'qwen2.5-vl-32b-instruct';
+const DEFAULT_BASE_URL = 'https://dashscope.aliyuncs.com/compatible-mode/v1';
 
 function getApiKey(): string | null {
   try {
     return typeof window !== 'undefined' ? window.localStorage.getItem('QWEN_API_KEY') : null;
   } catch {
     return null;
+  }
+}
+
+function getBaseUrl(): string {
+  try {
+    return (typeof window !== 'undefined' && window.localStorage.getItem(QWEN_BASE_URL_KEY)) || DEFAULT_BASE_URL;
+  } catch {
+    return DEFAULT_BASE_URL;
   }
 }
 
@@ -53,7 +62,7 @@ async function chat({
     throw new Error("Qwen (DashScope) API key missing. Save it in Settings.");
   }
 
-  const res = await fetch(DASHCOPE_COMPAT_ENDPOINT, {
+  const res = await fetch(`${getBaseUrl()}/chat/completions`, {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${apiKey}`,

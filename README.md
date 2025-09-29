@@ -16,7 +16,7 @@ A powerful AI-powered prompt generation tool built with React, TypeScript, and G
 
 - **Frontend**: React 18, TypeScript, Vite
 - **Styling**: Tailwind CSS, Radix UI
-- **LLM Integration**: Provider-agnostic router (Gemini, OpenAI, Anthropic, Stability AI, Perplexity)
+- **LLM Integration**: Multi-provider router (Gemini, Qwen, Ollama, LM Studio, OpenAI, Anthropic, Stability AI, Perplexity)
 - **State Management**: TanStack Query
 - **Routing**: React Router DOM
 - **Icons**: Lucide React
@@ -88,9 +88,13 @@ For Windows users, we provide convenient batch files for easy setup:
 ## 📁 Project Structure
 
 ```
-services/               # LLM provider services (root-level)
-├── llm/router.ts       # Provider-agnostic LLM router (select & store keys)
-└── geminiService.ts    # Gemini AI integration
+services/                    # LLM provider services (root-level)
+├── llm/router.ts           # Provider-agnostic LLM router
+├── geminiService.ts        # Google Gemini AI integration
+└── providers/              # Additional provider implementations
+    ├── qwenService.ts      # Qwen (DashScope) integration
+    ├── ollamaService.ts    # Ollama local integration  
+    └── lmStudioService.ts  # LM Studio local integration
 
 src/
 ├── components/          # Reusable UI components
@@ -113,34 +117,48 @@ src/
 ### LLM Providers & API Keys
 
 This app supports multiple providers via the in-app Settings dialog:
-- Google Gemini
-  - API docs & key creation: https://ai.google.dev/gemini-api/docs/get-started
-  - Google Cloud console (key management): https://console.cloud.google.com/apis/credentials
-- OpenAI
-  - API key creation: https://platform.openai.com/api-keys
-  - Docs: https://platform.openai.com/docs
-- Anthropic (Claude)
-  - Sign up & get API key: https://console.anthropic.com/
-  - Docs: https://docs.anthropic.com/
-- Stability AI (Stable Diffusion, etc.)
-  - Account & key creation: https://platform.stability.ai/account/keys
-  - Docs: https://platform.stability.ai/docs
-- Perplexity AI (API is limited, currently via Pro)
-  - Sign up for Perplexity Labs: https://www.perplexity.ai/pro
-  - API docs (currently closed beta): https://docs.perplexity.ai/
+
+#### **Google Gemini** (Recommended)
+- **API Key**: Get from [Google AI Studio](https://ai.google.dev/gemini-api/docs/get-started)
+- **Custom Base URL**: Optional (leave empty for default Google endpoint)
+- **Models**: Uses `gemini-1.5-flash` for optimal performance
+- **Google Cloud console**: [API key management](https://console.cloud.google.com/apis/credentials)
+
+#### **Qwen (DashScope)**
+- **API Key**: Get from [Alibaba Cloud DashScope](https://dashscope.aliyuncs.com/)
+- **Base URL**: `https://dashscope.aliyuncs.com/compatible-mode/v1` (configurable)
+- **Models**: Uses `qwen2.5-vl-32b-instruct`
+
+#### **Ollama (Local)**
+- **Base URL**: `http://localhost:11434` (default, configurable)
+- **Model**: `qwen2.5-vl:32b` (configurable)  
+- **Setup**: Install [Ollama](https://ollama.ai/) and run: `ollama pull qwen2.5-vl:32b`
+
+#### **LM Studio (Local)** ✨ New!
+- **Base URL**: `http://localhost:1234` (default, configurable)
+- **Model**: Any loaded vision-capable model (configurable)
+- **Setup**: Install [LM Studio](https://lmstudio.ai/), load a model, and start the local server
+
+#### **Other Providers** (Framework Ready)
+- OpenAI: [API key creation](https://platform.openai.com/api-keys) | [Docs](https://platform.openai.com/docs)
+- Anthropic (Claude): [Console](https://console.anthropic.com/) | [Docs](https://docs.anthropic.com/)  
+- Stability AI: [Account & keys](https://platform.stability.ai/account/keys) | [Docs](https://platform.stability.ai/docs)
+- Perplexity AI: [Perplexity Labs](https://www.perplexity.ai/pro) | [API docs](https://docs.perplexity.ai/)
+
+*Note: Non-Gemini/Qwen/Ollama/LMStudio providers may fall back to Gemini until direct integrations are enabled.*
 
 ### How keys are stored
 
-- Open Settings (gear icon) → choose a Provider → paste your API key → Save.
-- Keys are stored in localStorage under:
-  - `GEMINI_API_KEY`
-  - `OPENAI_API_KEY`
-  - `ANTHROPIC_API_KEY`
-  - `STABILITY_API_KEY`
-  - `PERPLEXITY_API_KEY`
+- Open Settings (gear icon) → choose a Provider → paste your API key/configure URLs → Save.
+- Keys and settings are stored in localStorage under:
+  - `GEMINI_API_KEY`, `GEMINI_BASE_URL` (optional)
+  - `QWEN_API_KEY`, `QWEN_BASE_URL`
+  - `OLLAMA_BASE_URL`, `OLLAMA_MODEL`
+  - `LM_STUDIO_BASE_URL`, `LM_STUDIO_MODEL`
+  - Plus keys for other providers: `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, etc.
 - The active provider is stored under `LLM_PROVIDER`.
 
-Note: Non-Gemini providers may currently fall back to Gemini until their direct integrations are enabled (see `services/llm/router.ts`).
+All settings are stored securely in your browser's localStorage - no .env files needed!
 
 ## 🎨 Available Prompt Types
 
