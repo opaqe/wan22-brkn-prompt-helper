@@ -705,11 +705,12 @@ const App: React.FC = () => {
                         )}
                     </div>
                 </div>
-                 {error && (isCaptioning || loading) && (
-                    <div className="mt-4 text-center bg-red-900/50 border border-red-500 text-red-300 p-2 rounded-lg text-sm">
+                 {error && (
+                    <div className="mt-4 text-center bg-red-900/50 border border-red-500 text-red-300 p-3 rounded-lg text-sm">
+                        <p className="font-semibold mb-1">Error</p>
                         <p>{error}</p>
                     </div>
-                )}
+                 )}
                 {captions.length > 0 && (
                   <div className="mt-6">
                     <h4 className="text-zinc-300 font-medium mb-3">Choose a caption</h4>
