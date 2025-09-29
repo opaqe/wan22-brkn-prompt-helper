@@ -173,6 +173,7 @@ interface CaptionGenerationParams {
 
 export const generateCaptionFromImage = async (params: CaptionGenerationParams): Promise<string[]> => {
     try {
+        console.log('Starting generateCaptionFromImage...');
         const { imageData, mimeType } = params;
 
         const prompt = `Analyze this image and produce exactly 3 rich, detailed caption options (each 80-120 words). When a person is the main subject/protagonist in the image, lead with detailed physicality, then describe the feelings, mood, and environment:
@@ -201,6 +202,7 @@ NSFW: "A petite Asian woman with long black hair, large breasts, and slender leg
 
 Return exactly 3 captions as a JSON array of strings.`;
 
+        console.log('Creating Gemini model...');
         const model = getAI().getGenerativeModel({
             model: 'gemini-2.5-flash',
             generationConfig: {
@@ -213,22 +215,28 @@ Return exactly 3 captions as a JSON array of strings.`;
             }
         });
 
+        console.log('Generating content...');
         const response = await model.generateContent([
             { inlineData: { data: imageData, mimeType } },
             prompt
         ]);
 
+        console.log('Parsing response...');
         const jsonText = response.response.text().trim();
+        console.log('Raw response:', jsonText.substring(0, 200));
+        
         const captions = extractJson<string[]>(jsonText);
 
         if (!Array.isArray(captions)) {
             throw new Error("API did not return an array of captions.");
         }
 
+        console.log('Successfully generated captions');
         return captions as string[];
 
     } catch (error) {
         console.error("Error generating caption from image:", error);
+        console.error("Error details:", error instanceof Error ? error.message : String(error));
         let errorMessage = "Failed to generate caption from image. The API returned an unexpected response.";
         if (error instanceof Error) {
             errorMessage = `Failed to generate caption from image: ${error.message}`;
@@ -268,6 +276,7 @@ Video Prompt: "${promptText}"`;
 
 export const generatePrompts = async (params: PromptGenerationParams): Promise<VideoPrompt[]> => {
   try {
+    console.log('Starting generatePrompts...');
     const { scene, style, protagonistAction, cameraAngle, cameraMovement, lighting, isNsfw, cameraDevice } = params;
     
     const examples = `**Example 1 (Narrative with Camera Action):** "A little girl, lost in the city and separated from her parents in New York's Times Square, looks up. The camera tilts up, following her gaze. Starting from the ground, it slowly reveals the massive, glittering, and dizzying skyscrapers and billboards, powerfully emphasizing her smallness and helplessness in a vast world."
@@ -312,6 +321,7 @@ Now, using the following criteria, generate 3 new variations. For each variation
 - **Camera/Device:** "${cameraDevice ?? ''}"
 - **Lighting:** "${lighting}"`;
 
+    console.log('Creating Gemini model for prompts...');
     const model = getAI().getGenerativeModel({ 
       model: "gemini-2.5-flash",
       generationConfig: {
@@ -320,19 +330,26 @@ Now, using the following criteria, generate 3 new variations. For each variation
         temperature: isNsfw ? 0.9 : 0.8,
       }
     });
+    
+    console.log('Generating content...');
     const response = await model.generateContent(prompt);
 
+    console.log('Parsing response...');
     const jsonText = response.response.text().trim();
+    console.log('Raw response:', jsonText.substring(0, 200));
+    
     const generatedPrompts = extractJson<VideoPrompt[]>(jsonText);
     
     if (!Array.isArray(generatedPrompts)) {
         throw new Error("API did not return an array of prompts.");
     }
 
+    console.log('Successfully generated prompts');
     return generatedPrompts as VideoPrompt[];
 
   } catch (error) {
     console.error("Error generating prompts:", error);
+    console.error("Error details:", error instanceof Error ? error.message : String(error));
     let errorMessage = "Failed to generate prompts. The API returned an unexpected response.";
     if (error instanceof Error) {
         errorMessage = `Failed to generate prompts: ${error.message}`;
