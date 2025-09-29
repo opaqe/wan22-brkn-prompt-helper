@@ -537,7 +537,7 @@ const App: React.FC = () => {
   const formTextareaClass = "w-full p-2.5 bg-zinc-800 border border-zinc-700 rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none transition duration-200 min-h-[100px] text-base";
   const buttonClass = "flex items-center justify-center px-4 py-2 bg-zinc-700 text-white rounded-lg font-semibold hover:bg-zinc-600 disabled:bg-zinc-800 disabled:text-zinc-500 disabled:cursor-not-allowed transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-zinc-900 focus:ring-red-500";
   
-  // Memoized options to prevent re-computation on every render
+  // Memoized options to prevent re-computation on every render  
   const multiSelectOptions = React.useMemo(() => {
     const currentProtagonistActionOptions = isNsfwMode ? nsfwProtagonistActionOptions : protagonistActionOptions;
     

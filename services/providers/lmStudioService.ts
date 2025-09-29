@@ -27,21 +27,41 @@ function extractJson<T = any>(text: string): T {
   try {
     return JSON.parse(text) as T;
   } catch {
-    const start = Math.min(
-      ...['[', '{']
-        .map((c) => text.indexOf(c))
-        .filter((i) => i >= 0)
-    );
-    const end = Math.max(
-      ...[']', '}']
-        .map((c) => text.lastIndexOf(c))
-        .filter((i) => i >= 0)
-    );
-    if (start >= 0 && end > start) {
-      const slice = text.slice(start, end + 1);
-      return JSON.parse(slice) as T;
+    // Clean the text first - remove markdown code blocks if present
+    let cleanText = text.replace(/```json\s*/g, '').replace(/```\s*/g, '');
+    
+    // Try parsing the cleaned text
+    try {
+      return JSON.parse(cleanText) as T;
+    } catch {
+      // Find JSON boundaries
+      const start = Math.min(
+        ...['[', '{']
+          .map((c) => cleanText.indexOf(c))
+          .filter((i) => i >= 0)
+      );
+      const end = Math.max(
+        ...[']', '}']
+          .map((c) => cleanText.lastIndexOf(c))
+          .filter((i) => i >= 0)
+      );
+      
+      if (start >= 0 && end > start) {
+        const slice = cleanText.slice(start, end + 1);
+        try {
+          return JSON.parse(slice) as T;
+        } catch {
+          // Last resort: try to fix common JSON issues
+          const fixedSlice = slice
+            .replace(/,\s*}/g, '}') // Remove trailing commas in objects
+            .replace(/,\s*]/g, ']') // Remove trailing commas in arrays
+            .replace(/([{,]\s*)(\w+):/g, '$1"$2":') // Quote unquoted keys
+            .replace(/:\s*"([^"]*?)"\s*"([^"]*?)"/g, ':"$1$2"'); // Fix adjacent quotes
+          return JSON.parse(fixedSlice) as T;
+        }
+      }
+      throw new Error(`Response was not valid JSON. Raw response: ${text.substring(0, 200)}...`);
     }
-    throw new Error('Response was not valid JSON.');
   }
 }
 
