@@ -79,37 +79,61 @@ export async function generatePrompts(params: {
   cameraDevice?: string;
 }): Promise<VideoPrompt[]> {
   const provider = getActiveProvider();
-  switch (provider) {
-    case 'qwen':
-      return qwenGeneratePrompts(params);
-    case 'ollama':
-      return ollamaGeneratePrompts(params);
-    case 'lmstudio':
-      return lmStudioGeneratePrompts(params);
-    case 'gemini':
-    default:
-      if (provider !== 'gemini') {
-        console.warn(`[LLM Router] Provider "${provider}" not fully implemented. Falling back to Gemini.`);
-      }
-      return geminiGeneratePrompts(params);
+  console.log('[LLM Router] generatePrompts called with provider:', provider);
+  console.log('[LLM Router] Params:', { scene: params.scene.substring(0, 50), style: params.style, isNsfw: params.isNsfw });
+  
+  try {
+    switch (provider) {
+      case 'qwen':
+        console.log('[LLM Router] Routing to Qwen...');
+        return await qwenGeneratePrompts(params);
+      case 'ollama':
+        console.log('[LLM Router] Routing to Ollama...');
+        return await ollamaGeneratePrompts(params);
+      case 'lmstudio':
+        console.log('[LLM Router] Routing to LM Studio...');
+        return await lmStudioGeneratePrompts(params);
+      case 'gemini':
+      default:
+        if (provider !== 'gemini') {
+          console.warn(`[LLM Router] Provider "${provider}" not fully implemented. Falling back to Gemini.`);
+        }
+        console.log('[LLM Router] Routing to Gemini...');
+        return await geminiGeneratePrompts(params);
+    }
+  } catch (error) {
+    console.error('[LLM Router] Error in generatePrompts:', error);
+    throw error;
   }
 }
 
 export async function generateCaptionFromImage(params: { imageData: string; mimeType: string }): Promise<string[]> {
   const provider = getActiveProvider();
-  switch (provider) {
-    case 'qwen':
-      return qwenGenerateCaption(params);
-    case 'ollama':
-      return ollamaGenerateCaption(params);
-    case 'lmstudio':
-      return lmStudioGenerateCaption(params);
-    case 'gemini':
-    default:
-      if (provider !== 'gemini') {
-        console.warn(`[LLM Router] Provider "${provider}" image captioning not fully implemented. Falling back to Gemini.`);
-      }
-      return geminiGenerateCaption(params);
+  console.log('[LLM Router] generateCaptionFromImage called with provider:', provider);
+  console.log('[LLM Router] Image mimeType:', params.mimeType);
+  
+  try {
+    switch (provider) {
+      case 'qwen':
+        console.log('[LLM Router] Routing to Qwen for captioning...');
+        return await qwenGenerateCaption(params);
+      case 'ollama':
+        console.log('[LLM Router] Routing to Ollama for captioning...');
+        return await ollamaGenerateCaption(params);
+      case 'lmstudio':
+        console.log('[LLM Router] Routing to LM Studio for captioning...');
+        return await lmStudioGenerateCaption(params);
+      case 'gemini':
+      default:
+        if (provider !== 'gemini') {
+          console.warn(`[LLM Router] Provider "${provider}" image captioning not fully implemented. Falling back to Gemini.`);
+        }
+        console.log('[LLM Router] Routing to Gemini for captioning...');
+        return await geminiGenerateCaption(params);
+    }
+  } catch (error) {
+    console.error('[LLM Router] Error in generateCaptionFromImage:', error);
+    throw error;
   }
 }
 

@@ -443,20 +443,27 @@ const App: React.FC = () => {
   const handleCaptionImage = async () => {
       if (!imageFile || !imageBase64) return;
       
+      console.log('[App] Starting handleCaptionImage...');
+      console.log('[App] Active provider:', activeProvider);
       setIsCaptioning(true);
       setError(null);
 
       try {
           // The base64 string from FileReader includes the data URL prefix, which needs to be removed.
           const base64Data = imageBase64.split(',')[1];
+          console.log('[App] Calling generateCaptionFromImage...');
           const results = await generateCaptionFromImage({
               imageData: base64Data,
               mimeType: imageFile.type,
           });
+          console.log('[App] Caption generation successful, received', results.length, 'captions');
           setCaptions(results);
           setSelectedCaptionIndex(null);
       } catch (err) {
-          setError(err instanceof Error ? err.message : 'An unknown error occurred during captioning.');
+          console.error('[App] Error in handleCaptionImage:', err);
+          const errorMsg = err instanceof Error ? err.message : 'An unknown error occurred during captioning.';
+          console.error('[App] Error message:', errorMsg);
+          setError(errorMsg);
       } finally {
           setIsCaptioning(false);
       }
@@ -466,11 +473,14 @@ const App: React.FC = () => {
     e.preventDefault();
     if (!scene.trim() || loading || lighting.length === 0 || !isApiKeySet) return;
 
+    console.log('[App] Starting handleGeneratePrompts...');
+    console.log('[App] Active provider:', activeProvider);
     setLoading(true);
     setError(null);
     setPrompts([]);
 
     try {
+      console.log('[App] Calling generatePrompts...');
       const generatedPrompts = await generatePrompts({ 
         scene, 
         style: [...style, ...nsfwStyle].filter(Boolean).join(', '), 
@@ -481,13 +491,17 @@ const App: React.FC = () => {
         isNsfw: isNsfwMode,
         cameraDevice: cameraDevice.join(', '),
       });
+      console.log('[App] Prompt generation successful, received', generatedPrompts.length, 'prompts');
       setPrompts(generatedPrompts);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An unknown error occurred. Please try again.');
+      console.error('[App] Error in handleGeneratePrompts:', err);
+      const errorMsg = err instanceof Error ? err.message : 'An unknown error occurred. Please try again.';
+      console.error('[App] Error message:', errorMsg);
+      setError(errorMsg);
     } finally {
       setLoading(false);
     }
-  }, [scene, style, nsfwStyle, protagonistAction, cameraAngle, cameraMovement, cameraDevice, lighting, loading, isNsfwMode]);
+  }, [scene, style, nsfwStyle, protagonistAction, cameraAngle, cameraMovement, cameraDevice, lighting, loading, isNsfwMode, activeProvider]);
 
   const renderContent = () => {
     if (loading) {
