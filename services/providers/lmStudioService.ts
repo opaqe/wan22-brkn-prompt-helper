@@ -27,14 +27,22 @@ function extractJson<T = any>(text: string): T {
   try {
     return JSON.parse(text) as T;
   } catch {
-    // Clean the text first - remove markdown code blocks if present
+    // Step 1: Remove markdown code blocks
     let cleanText = text.replace(/```json\s*/g, '').replace(/```\s*/g, '');
     
-    // Try parsing the cleaned text
+    // Step 2: Fix common escape sequence issues
+    cleanText = cleanText
+      .replace(/\\"/g, '"')  // Fix double-escaped quotes
+      .replace(/\n/g, ' ')    // Replace newlines with spaces
+      .replace(/\r/g, ' ')    // Replace carriage returns
+      .replace(/\t/g, ' ')    // Replace tabs
+      .replace(/\\/g, '\\\\') // Ensure backslashes are properly escaped
+      .replace(/\\\\"/g, '\\"'); // But keep escaped quotes as single escape
+    
     try {
       return JSON.parse(cleanText) as T;
     } catch {
-      // Find JSON boundaries
+      // Step 3: Find JSON boundaries
       const start = Math.min(
         ...['[', '{']
           .map((c) => cleanText.indexOf(c))
@@ -51,12 +59,12 @@ function extractJson<T = any>(text: string): T {
         try {
           return JSON.parse(slice) as T;
         } catch {
-          // Last resort: try to fix common JSON issues
+          // Step 4: Last resort - fix common JSON issues
           const fixedSlice = slice
-            .replace(/,\s*}/g, '}') // Remove trailing commas in objects
-            .replace(/,\s*]/g, ']') // Remove trailing commas in arrays
-            .replace(/([{,]\s*)(\w+):/g, '$1"$2":') // Quote unquoted keys
-            .replace(/:\s*"([^"]*?)"\s*"([^"]*?)"/g, ':"$1$2"'); // Fix adjacent quotes
+            .replace(/,\s*}/g, '}')                    // Remove trailing commas in objects
+            .replace(/,\s*]/g, ']')                    // Remove trailing commas in arrays
+            .replace(/([{,]\s*)(\w+):/g, '$1"$2":')    // Quote unquoted keys
+            .replace(/:\s*'([^']*)'/g, ':"$1"');       // Replace single quotes with double
           return JSON.parse(fixedSlice) as T;
         }
       }

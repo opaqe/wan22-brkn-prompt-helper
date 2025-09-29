@@ -48,6 +48,56 @@ const getAI = (): GoogleGenerativeAI => {
   return ai;
 };
 
+function extractJson<T = any>(text: string): T {
+  try {
+    return JSON.parse(text) as T;
+  } catch {
+    // Step 1: Remove markdown code blocks
+    let cleanText = text.replace(/```json\s*/g, '').replace(/```\s*/g, '');
+    
+    // Step 2: Fix common escape sequence issues
+    cleanText = cleanText
+      .replace(/\\"/g, '"')  // Fix double-escaped quotes
+      .replace(/\n/g, ' ')    // Replace newlines with spaces
+      .replace(/\r/g, ' ')    // Replace carriage returns
+      .replace(/\t/g, ' ')    // Replace tabs
+      .replace(/\\/g, '\\\\') // Ensure backslashes are properly escaped
+      .replace(/\\\\"/g, '\\"'); // But keep escaped quotes as single escape
+    
+    try {
+      return JSON.parse(cleanText) as T;
+    } catch {
+      // Step 3: Find JSON boundaries
+      const start = Math.min(
+        ...['[', '{']
+          .map((c) => cleanText.indexOf(c))
+          .filter((i) => i >= 0)
+      );
+      const end = Math.max(
+        ...[']', '}']
+          .map((c) => cleanText.lastIndexOf(c))
+          .filter((i) => i >= 0)
+      );
+      
+      if (start >= 0 && end > start) {
+        const slice = cleanText.slice(start, end + 1);
+        try {
+          return JSON.parse(slice) as T;
+        } catch {
+          // Step 4: Last resort - fix common JSON issues
+          const fixedSlice = slice
+            .replace(/,\s*}/g, '}')                    // Remove trailing commas in objects
+            .replace(/,\s*]/g, ']')                    // Remove trailing commas in arrays
+            .replace(/([{,]\s*)(\w+):/g, '$1"$2":')    // Quote unquoted keys
+            .replace(/:\s*'([^']*)'/g, ':"$1"');       // Replace single quotes with double
+          return JSON.parse(fixedSlice) as T;
+        }
+      }
+      throw new Error(`Response was not valid JSON. Raw response: ${text.substring(0, 200)}...`);
+    }
+  }
+}
+
 const promptsSchema = {
   type: SchemaType.ARRAY,
   items: {
@@ -169,7 +219,7 @@ Return exactly 3 captions as a JSON array of strings.`;
         ]);
 
         const jsonText = response.response.text().trim();
-        const captions = JSON.parse(jsonText);
+        const captions = extractJson<string[]>(jsonText);
 
         if (!Array.isArray(captions)) {
             throw new Error("API did not return an array of captions.");
@@ -204,7 +254,7 @@ Video Prompt: "${promptText}"`;
         const response = await model.generateContent(prompt);
 
         const jsonText = response.response.text().trim();
-        return JSON.parse(jsonText);
+        return extractJson<object>(jsonText);
 
     } catch (error) {
         console.error("Error transforming prompt to JSON:", error);
@@ -273,7 +323,7 @@ Now, using the following criteria, generate 3 new variations. For each variation
     const response = await model.generateContent(prompt);
 
     const jsonText = response.response.text().trim();
-    const generatedPrompts = JSON.parse(jsonText);
+    const generatedPrompts = extractJson<VideoPrompt[]>(jsonText);
     
     if (!Array.isArray(generatedPrompts)) {
         throw new Error("API did not return an array of prompts.");
