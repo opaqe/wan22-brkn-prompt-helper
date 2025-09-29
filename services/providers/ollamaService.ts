@@ -68,21 +68,27 @@ async function generate({ prompt, images }: { prompt: string; images?: string[] 
 
 export async function generateCaptionFromImage(params: { imageData: string; mimeType: string }): Promise<string[]> {
   const { imageData } = params;
-  const prompt = `Analyze the image and return exactly 3 rich, distinct caption options. When a person is the main subject, lead with detailed physicality:
+  const prompt = `Analyze the image and return exactly 3 detailed caption options (each 80-120 words). When a person is the main subject, lead with physicality, then describe feelings and environment:
 
 **Lead with Physicality:**
 - Race/Ethnicity (Slavic, Asian, African, etc.)
 - Hair color/style
 - Body type and size (petite, athletic, curvy, muscular)
+- Breast size (when relevant: small, medium, large)
 - Notable features (freckles, dimples, scars, tattoos)
 
-**Then add:**
+**Then add Action & Sensory Details:**
 - What they're doing (action/pose)
 - Sensory details (how things feel - cool metal, warm skin, rough fabric)
 
+**Describe Feelings & Environment:**
+- Emotional atmosphere (tension, serenity, passion, excitement)
+- Environmental mood and lighting quality
+- Setting details that enhance emotional tone
+
 **Examples:**
-SFW: "A broad-shouldered African American man with tight curly black hair and defined abs is mid-pullup. His biceps bulge and veins stand out against his dark skin."
-NSFW: "A petite Asian woman with long black hair, large breasts, and slender legs stands in semi-transparent lingerie. Her skin is porcelain pale with a small birthmark below her collarbone."
+SFW: "A broad-shouldered African American man with tight curly black hair and defined abs is mid-pullup in a dimly lit industrial gym. His biceps bulge and veins stand out against his dark skin. The atmosphere is gritty and determined, with golden hour light cutting through dusty windows. The air feels heavy with effort and ambition."
+NSFW: "A petite Asian woman with long black hair, large breasts, and slender legs stands in semi-transparent lingerie. Her skin is porcelain pale with a small birthmark below her collarbone. The bedroom atmosphere is thick with anticipation, silk sheets catching warm lamplight. Her gaze is vulnerable and inviting, the space intimate and hushed."
 
 Return exactly 3 captions as a JSON array of strings. Output JSON only.`;
   const text = await generate({ prompt, images: [imageData] });
@@ -113,7 +119,7 @@ export async function generatePrompts(params: {
     ? 'You are a master visual storyteller for tasteful adult content. Follow safety rules. '
     : 'You are a master visual storyteller for cinematic content. ';
 
-  const prompt = `${sys}Generate 3 video prompt variations as a JSON array. Each item is an object with keys \"title\" and \"prompt\".\nRules:\n- 80–120 words each (max 140).\n- Weave camera angle and movement into narrative.\n- Combine elements cohesively.\n\nCriteria:\n- Main Scene: \"${scene}\"\n- Visual Style: \"${style}\"\n- Protagonist Action: \"${protagonistAction}\"\n- Camera Angle: \"${cameraAngle}\"\n- Camera Movement: \"${cameraMovement}\"\n- Camera/Device: \"${cameraDevice ?? ''}\"\n- Lighting: \"${lighting}\"`;
+  const prompt = `${sys}Generate 3 video prompt variations as a JSON array. Each item is an object with keys \"title\" and \"prompt\".\nRules:\n- 80–120 words each (max 140).\n- **CRITICAL: Build each prompt around the Main Scene description - it's your foundation. Use every detail from it.**\n- Weave camera angle and movement into narrative.\n- Combine elements cohesively.\n\nCriteria:\n- Main Scene (YOUR FOUNDATION): \"${scene}\"\n- Visual Style: \"${style}\"\n- Protagonist Action: \"${protagonistAction}\"\n- Camera Angle: \"${cameraAngle}\"\n- Camera Movement: \"${cameraMovement}\"\n- Camera/Device: \"${cameraDevice ?? ''}\"\n- Lighting: \"${lighting}\"`;
 
   const text = await generate({ prompt });
   const json = extractJson<VideoPrompt[]>(text);

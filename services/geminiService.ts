@@ -125,22 +125,29 @@ export const generateCaptionFromImage = async (params: CaptionGenerationParams):
     try {
         const { imageData, mimeType } = params;
 
-        const prompt = `Analyze this image and produce exactly 3 rich, distinct caption options. When a person is the main subject/protagonist in the image, lead with detailed physicality:
+        const prompt = `Analyze this image and produce exactly 3 rich, detailed caption options (each 80-120 words). When a person is the main subject/protagonist in the image, lead with detailed physicality, then describe the feelings, mood, and environment:
 
 **Lead with Physicality (when applicable):**
 - Race/Ethnicity (Slavic, Asian, African, etc.)
 - Hair color/style
 - Body type and size (petite, athletic, curvy, muscular)
+- Breast size (when relevant: small, medium, large)
 - Notable features (freckles, dimples, scars, tattoos)
 
-**Then add:**
+**Then add Action & Sensory Details:**
 - What they're doing (action/pose)
-- Sensory details (how things feel - cool metal, warm skin, rough fabric)
-- Environmental context
+- Sensory details (how things feel - cool metal, warm skin, rough fabric, soft sheets)
+
+**Describe Feelings & Environment:**
+- Emotional atmosphere (tension, serenity, passion, melancholy, excitement)
+- Environmental mood (cozy, sterile, chaotic, intimate, oppressive)
+- Lighting quality and how it affects the mood
+- Setting details that enhance the emotional tone
 
 **Examples:**
-SFW: "A broad-shouldered African American man with tight curly black hair and defined abs is mid-pullup. His biceps bulge and veins stand out against his dark skin as he strains."
-NSFW: "A petite Asian woman with long black hair, large breasts, and slender legs stands in semi-transparent lingerie. She's around 5'3", her skin is porcelain pale, and a small birthmark sits just below her collarbone."
+SFW: "A broad-shouldered African American man with tight curly black hair and defined abs is mid-pullup in a dimly lit industrial gym. His biceps bulge and veins stand out against his dark skin as he strains. The atmosphere is gritty and determined, with rays of golden hour light cutting through dusty windows, creating dramatic shadows across worn concrete floors. The air feels heavy with effort and ambition."
+
+NSFW: "A petite Asian woman with long black hair, large breasts, and slender legs stands in semi-transparent black lingerie. She's around 5'3", her porcelain pale skin glowing softly in warm amber lamplight, with a small birthmark just below her collarbone. The bedroom atmosphere is thick with anticipation and desire, silk sheets catching the light behind her. Her gaze is both vulnerable and inviting, the space intimate and hushed."
 
 Return exactly 3 captions as a JSON array of strings.`;
 
@@ -241,12 +248,13 @@ ${examples}
 
 Now, using the following criteria, generate 3 new variations. For each variation:
 1.  Write a detailed, paragraph-long prompt.
-2.  **Crucially, weave the specified camera angle and movement directly into the narrative.** Describe what the camera *does* as part of the action, rather than just listing it as a tag.
-3.  Combine all elements into a cohesive and evocative scene.
-4.  Provide a short, creative title that captures the essence of the shot.
+2.  **CRITICAL: You MUST build your prompt around the Main Scene description provided. This is the foundation - incorporate every detail from it.**
+3.  **Crucially, weave the specified camera angle and movement directly into the narrative.** Describe what the camera *does* as part of the action, rather than just listing it as a tag.
+4.  Combine all elements into a cohesive and evocative scene that stays true to the Main Scene description.
+5.  Provide a short, creative title that captures the essence of the shot.
 
 **Criteria for Generation:**
-- **Main Scene:** "${scene}"
+- **Main Scene (USE THIS AS YOUR FOUNDATION):** "${scene}"
 - **Visual Style:** "${style}"
 - **Protagonist Action:** "${protagonistAction}"
 - **Camera Angle:** "${cameraAngle}"
