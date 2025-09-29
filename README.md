@@ -25,9 +25,39 @@ A powerful AI-powered prompt generation tool built with React, TypeScript, and G
 
 ## 📋 Prerequisites
 
-- Node.js (v18 or higher)
-- Bun package manager
-- An API key for at least one supported LLM provider (see links below)
+- **Node.js** (v18 or higher) - [Download from nodejs.org](https://nodejs.org)
+- **Package Manager**: npm (included with Node.js) or [Bun](https://bun.sh) (optional, faster)
+- **Operating System**: Windows 10/11, macOS, or Linux
+- **API Key**: At least one supported LLM provider (see configuration section below)
+
+### Windows Users
+The provided batch files (`install-windows.bat` and `start-ui.bat`) are compatible with:
+- Windows 10 (all versions)
+- Windows 11 (all versions)
+- Both Command Prompt and PowerShell environments
+- Systems with or without ANSI color support
+
+## 🚀 Recent Updates
+
+### Version 2.2 - Multi-Provider Support & Enhanced Windows Compatibility
+
+**🤖 New AI Providers:**
+- **LM Studio** - Full local API support for any loaded model
+- **Enhanced Gemini** - Optional custom base URL configuration  
+- **Improved Qwen** - Configurable DashScope endpoint
+- **Better Ollama** - Enhanced local server configuration
+
+**🔧 Enhanced Windows Compatibility:**
+- **Improved Batch Files** - Better error handling and Windows 10/11 support
+- **ANSI Color Support** - Automatic fallback for older systems
+- **Robust Detection** - Enhanced package manager and dependency checking
+- **Better Error Messages** - More helpful troubleshooting information
+
+**⚙️ Configuration Improvements:**
+- All providers now support custom local addresses
+- Secure localStorage for all settings
+- Enhanced settings UI with provider-specific fields
+- Comprehensive setup documentation
 
 ## 🚀 Quick Start
 
