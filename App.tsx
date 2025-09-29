@@ -10,6 +10,7 @@ import ImageIcon from './components/icons/ImageIcon.tsx';
 import { Input } from './src/components/ui/input';
 import { Label } from './src/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './src/components/ui/card';
+import { MultiSelect, MultiSelectOption } from './src/components/ui/multi-select';
 
 const lightingOptions = [
   // 🌅 Natural & Environmental Light
@@ -340,12 +341,12 @@ const cameraDeviceGroups = [
 
 const App: React.FC = () => {
   const [scene, setScene] = useState<string>('');
-  const [style, setStyle] = useState<string>('');
-  const [nsfwStyle, setNsfwStyle] = useState<string>('');
-  const [protagonistAction, setProtagonistAction] = useState<string>('');
-  const [cameraAngle, setCameraAngle] = useState<string>('');
-  const [cameraMovement, setCameraMovement] = useState<string>('');
-  const [cameraDevice, setCameraDevice] = useState<string>('');
+  const [style, setStyle] = useState<string[]>([]);
+  const [nsfwStyle, setNsfwStyle] = useState<string[]>([]);
+  const [protagonistAction, setProtagonistAction] = useState<string[]>([]);
+  const [cameraAngle, setCameraAngle] = useState<string[]>([]);
+  const [cameraMovement, setCameraMovement] = useState<string[]>([]);
+  const [cameraDevice, setCameraDevice] = useState<string[]>([]);
   const [lighting, setLighting] = useState<string[]>([]);
   
   const [prompts, setPrompts] = useState<VideoPrompt[]>([]);
@@ -382,12 +383,12 @@ const App: React.FC = () => {
     };
 
     const sceneWords = countWords(scene);
-    const styleWords = countWords(style);
-    const nsfwStyleWords = countWords(nsfwStyle);
-    const actionWords = countWords(protagonistAction);
-    const angleWords = countWords(cameraAngle);
-    const movementWords = countWords(cameraMovement);
-    const deviceWords = countWords(cameraDevice);
+    const styleWords = countWords(style.join(' '));
+    const nsfwStyleWords = countWords(nsfwStyle.join(' '));
+    const actionWords = countWords(protagonistAction.join(' '));
+    const angleWords = countWords(cameraAngle.join(' '));
+    const movementWords = countWords(cameraMovement.join(' '));
+    const deviceWords = countWords(cameraDevice.join(' '));
     const lightingWords = countWords(lighting.join(' '));
 
     const totalWords = sceneWords + styleWords + nsfwStyleWords + actionWords + angleWords + movementWords + deviceWords + lightingWords;
@@ -412,9 +413,9 @@ const App: React.FC = () => {
     setIsNsfwMode(prev => {
         const newMode = !prev;
         // Reset fields to defaults for the new mode to avoid invalid combinations
-        setStyle('');
-        setNsfwStyle('');
-        setProtagonistAction('');
+        setStyle([]);
+        setNsfwStyle([]);
+        setProtagonistAction([]);
         // Clear previous results and errors
         setPrompts([]);
         setError(null);
@@ -460,13 +461,6 @@ const App: React.FC = () => {
           setIsCaptioning(false);
       }
   };
-  const handleLightingChange = (option: string) => {
-    setLighting(prev => 
-        prev.includes(option) 
-            ? prev.filter(item => item !== option) 
-            : [...prev, option]
-    );
-  };
 
   const handleGeneratePrompts = useCallback(async (e: FormEvent) => {
     e.preventDefault();
@@ -479,13 +473,13 @@ const App: React.FC = () => {
     try {
       const generatedPrompts = await generatePrompts({ 
         scene, 
-        style: [style, nsfwStyle].filter(Boolean).join(', '), 
-        protagonistAction, 
-        cameraAngle, 
-        cameraMovement, 
+        style: [...style, ...nsfwStyle].filter(Boolean).join(', '), 
+        protagonistAction: protagonistAction.join(', '), 
+        cameraAngle: cameraAngle.join(', '), 
+        cameraMovement: cameraMovement.join(', '), 
         lighting: lighting.join(', '),
         isNsfw: isNsfwMode,
-        cameraDevice,
+        cameraDevice: cameraDevice.join(', '),
       });
       setPrompts(generatedPrompts);
     } catch (err) {
@@ -543,7 +537,24 @@ const App: React.FC = () => {
   const formTextareaClass = "w-full p-2.5 bg-zinc-800 border border-zinc-700 rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none transition duration-200 min-h-[100px] text-base";
   const buttonClass = "flex items-center justify-center px-4 py-2 bg-zinc-700 text-white rounded-lg font-semibold hover:bg-zinc-600 disabled:bg-zinc-800 disabled:text-zinc-500 disabled:cursor-not-allowed transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-zinc-900 focus:ring-red-500";
   
-const currentProtagonistActionOptions = isNsfwMode ? nsfwProtagonistActionOptions : protagonistActionOptions;
+  // Convert arrays to MultiSelectOption format
+  const currentProtagonistActionOptions = isNsfwMode ? nsfwProtagonistActionOptions : protagonistActionOptions;
+  
+  const styleMultiOptions: MultiSelectOption[] = styleOptions.map(opt => ({ value: opt, label: opt }));
+  
+  const nsfwStyleMultiOptions: MultiSelectOption[] = nsfwStyleGroups.flatMap(group => 
+    group.options.map(opt => ({ value: opt, label: opt, group: group.label }))
+  );
+  
+  const protagonistActionMultiOptions: MultiSelectOption[] = currentProtagonistActionOptions.map(opt => ({ value: opt, label: opt }));
+  
+  const cameraAngleMultiOptions: MultiSelectOption[] = cameraAngleOptions.map(opt => ({ value: opt, label: opt }));
+  
+  const cameraMovementMultiOptions: MultiSelectOption[] = cameraMovementOptions.map(opt => ({ value: opt, label: opt }));
+  
+  const cameraDeviceMultiOptions: MultiSelectOption[] = cameraDeviceGroups.flatMap(group => 
+    group.options.map(opt => ({ value: opt, label: opt, group: group.label }))
+  );
 
   return (
     <div className="min-h-screen flex flex-col bg-zinc-900 text-zinc-100 font-sans">
@@ -772,85 +783,80 @@ const currentProtagonistActionOptions = isNsfwMode ? nsfwProtagonistActionOption
               </div>
               <div>
                 <label htmlFor="style" className={formLabelClass}>Style</label>
-                <select id="style" value={style} onChange={(e) => setStyle(e.target.value)} className={formSelectClass} disabled={loading}>
-                  <option value="">None</option>
-                  {styleOptions.map(option => (
-                    <option key={option} value={option}>{option}</option>
-                  ))}
-                </select>
+                <MultiSelect
+                  options={styleMultiOptions}
+                  value={style}
+                  onChange={setStyle}
+                  placeholder="Select styles..."
+                  disabled={loading}
+                />
               </div>
               {isNsfwMode && (
                 <div>
                   <label htmlFor="nsfwStyle" className={`${formLabelClass} text-red-300`}>NSFW Style</label>
-                  <select id="nsfwStyle" value={nsfwStyle} onChange={(e) => setNsfwStyle(e.target.value)} className={formSelectClass} disabled={loading}>
-                    <option value="">None</option>
-                    {nsfwStyleGroups.map(group => (
-                      <optgroup key={group.label} label={group.label}>
-                        {group.options.map(option => (
-                          <option key={option} value={option}>{option}</option>
-                        ))}
-                      </optgroup>
-                    ))}
-                  </select>
+                  <MultiSelect
+                    options={nsfwStyleMultiOptions}
+                    value={nsfwStyle}
+                    onChange={setNsfwStyle}
+                    placeholder="Select NSFW styles..."
+                    disabled={loading}
+                  />
                 </div>
               )}
                <div>
                 <label htmlFor="protagonistAction" className={formLabelClass}>Protagonist Action</label>
-                <select id="protagonistAction" value={protagonistAction} onChange={(e) => setProtagonistAction(e.target.value)} className={formSelectClass} disabled={loading}>
-                  <option value="">None</option>
-                  {currentProtagonistActionOptions.map(option => <option key={option} value={option}>{option}</option>)}
-                </select>
+                <MultiSelect
+                  options={protagonistActionMultiOptions}
+                  value={protagonistAction}
+                  onChange={setProtagonistAction}
+                  placeholder="Select actions..."
+                  disabled={loading}
+                />
               </div>
               <div>
                 <label htmlFor="cameraAngle" className={formLabelClass}>Camera Angle</label>
-                <select id="cameraAngle" value={cameraAngle} onChange={(e) => setCameraAngle(e.target.value)} className={formSelectClass} disabled={loading}>
-                  <option value="">None</option>
-                  {cameraAngleOptions.map(option => <option key={option} value={option}>{option}</option>)}
-                </select>
+                <MultiSelect
+                  options={cameraAngleMultiOptions}
+                  value={cameraAngle}
+                  onChange={setCameraAngle}
+                  placeholder="Select camera angles..."
+                  disabled={loading}
+                />
               </div>
               <div>
                 <label htmlFor="cameraMovement" className={formLabelClass}>Camera Movement</label>
-                <select id="cameraMovement" value={cameraMovement} onChange={(e) => setCameraMovement(e.target.value)} className={formSelectClass} disabled={loading}>
-                   <option value="">None</option>
-                   {cameraMovementOptions.map(option => <option key={option} value={option}>{option}</option>)}
-                </select>
+                <MultiSelect
+                  options={cameraMovementMultiOptions}
+                  value={cameraMovement}
+                  onChange={setCameraMovement}
+                  placeholder="Select camera movements..."
+                  disabled={loading}
+                />
               </div>
               <div>
                 <label htmlFor="cameraDevice" className={formLabelClass}>Camera/Device</label>
-                <select id="cameraDevice" value={cameraDevice} onChange={(e) => setCameraDevice(e.target.value)} className={formSelectClass} disabled={loading}>
-                  <option value="">None</option>
-                  {cameraDeviceGroups.map(group => (
-                    <optgroup key={group.label} label={group.label}>
-                      {group.options.map(option => (
-                        <option key={option} value={option}>{option}</option>
-                      ))}
-                    </optgroup>
-                  ))}
-                </select>
+                <MultiSelect
+                  options={cameraDeviceMultiOptions}
+                  value={cameraDevice}
+                  onChange={setCameraDevice}
+                  placeholder="Select camera/device..."
+                  disabled={loading}
+                />
               </div>
               
               <div className="md:col-span-2">
                 <label className={formLabelClass}>Lighting</label>
                 <p className="text-xs text-zinc-400 mb-3">
-                  Select one or more. e.g., Soft key light, harsh rim light in warmer tones, and a purple top light.
+                  Select one or more lighting options to set the mood and atmosphere.
                 </p>
-                <div className="flex flex-wrap gap-2">
-                  {lightingOptions.map(option => (
-                    <button
-                      key={option}
-                      type="button"
-                      onClick={() => handleLightingChange(option)}
-                      className={`px-3 py-1.5 text-sm rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-zinc-800 focus:ring-red-500 ${
-                        lighting.includes(option)
-                          ? 'bg-red-500 text-white font-semibold shadow'
-                          : 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600'
-                      }`}
-                      disabled={loading}
-                    >
-                      {option}
-                    </button>
-                  ))}
-                </div>
+                <MultiSelect
+                  options={lightingOptions.map(opt => ({ value: opt, label: opt }))}
+                  value={lighting}
+                  onChange={setLighting}
+                  placeholder="Select lighting options..."
+                  disabled={loading}
+                  maxHeight="250px"
+                />
               </div>
 
               <div className="md:col-span-2 mt-4">
