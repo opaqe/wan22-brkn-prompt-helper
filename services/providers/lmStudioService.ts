@@ -170,6 +170,129 @@ export async function transformPromptToJson(promptText: string): Promise<object>
   return extractJson<object>(text);
 }
 
+// ============ THREE-PART GENERATION SYSTEM ============
+
+// Part 1: Caption & Character Generation
+export async function generateCaptionAndCharacter(params: {
+  scene: string;
+  style: string;
+  isNsfw: boolean;
+}): Promise<string> {
+  const { scene, style, isNsfw } = params;
+
+  const messages = [
+    {
+      role: 'system',
+      content: isNsfw
+        ? 'You are a master visual storyteller for adult content. Describe scenes with rich physical and sensory details.'
+        : 'You are a master visual storyteller for cinematic content. Describe scenes with rich visual and sensory details.'
+    },
+    {
+      role: 'user',
+      content: `Refine and expand this scene description with rich character and environmental details (80-120 words).
+
+Scene: "${scene}"
+Visual Style: "${style}"
+
+When describing people, include:
+- Physical characteristics (ethnicity, build, features)
+- What they're wearing/doing
+- Emotional atmosphere
+- Sensory details (textures, sounds, mood)
+
+Return ONLY the refined scene description as plain text (no JSON, no extra formatting).`
+    }
+  ];
+
+  return await chat({ messages, temperature: 0.8, max_tokens: 300 });
+}
+
+// Part 2: Action & Scene Dynamics
+export async function generateActionDescription(params: {
+  refinedScene: string;
+  protagonistAction: string;
+  isNsfw: boolean;
+}): Promise<string> {
+  const { refinedScene, protagonistAction, isNsfw } = params;
+
+  const messages = [
+    {
+      role: 'system',
+      content: isNsfw
+        ? 'You are a master visual storyteller for adult content. Describe character actions with sensory and emotional depth.'
+        : 'You are a master visual storyteller for cinematic content. Describe character actions with dynamic detail.'
+    },
+    {
+      role: 'user',
+      content: `Build on this scene by adding dynamic action and movement (60-100 words).
+
+Scene: "${refinedScene}"
+Action to incorporate: "${protagonistAction}"
+
+Describe:
+- How the action unfolds moment-by-moment
+- Body language and expression
+- Interaction with environment
+- Emotional undercurrent
+
+Return ONLY the action description as plain text (no JSON, no extra formatting).`
+    }
+  ];
+
+  return await chat({ messages, temperature: 0.8, max_tokens: 250 });
+}
+
+// Part 3: Final Camera & Cinematography
+export async function generateFinalPrompts(params: {
+  actionDescription: string;
+  cameraAngle: string;
+  cameraMovement: string;
+  lighting: string;
+  isNsfw: boolean;
+  cameraDevice?: string;
+}): Promise<VideoPrompt[]> {
+  const { actionDescription, cameraAngle, cameraMovement, lighting, isNsfw, cameraDevice } = params;
+
+  const messages = [
+    {
+      role: 'system',
+      content: isNsfw
+        ? 'You are a master cinematographer for adult content. Create complete video prompts with camera work. Output JSON only.'
+        : 'You are a master cinematographer for cinematic content. Create complete video prompts with camera work. Output JSON only.'
+    },
+    {
+      role: 'user',
+      content: `Generate 3 video prompt variations as a JSON array. Each item has {"title": string, "prompt": string}.
+
+Scene & Action: "${actionDescription}"
+Camera Angle: "${cameraAngle}"
+Camera Movement: "${cameraMovement}"
+Camera/Device: "${cameraDevice ?? 'cinematic camera'}"
+Lighting: "${lighting}"
+
+Rules:
+- 80-120 words each (max 140)
+- Seamlessly weave camera angle and movement into the narrative
+- Include lighting and mood
+- Each variation should feel complete and cinematic
+
+Return ONLY a JSON array of 3 prompts.`
+    }
+  ];
+
+  const text = await chat({
+    messages,
+    temperature: isNsfw ? 0.9 : 0.8,
+    max_tokens: 1500
+  });
+
+  const json = extractJson<VideoPrompt[]>(text);
+  if (!Array.isArray(json)) throw new Error('Expected an array of prompts.');
+  return json as VideoPrompt[];
+}
+
+// ============ LEGACY SINGLE-CALL GENERATION ============
+
 export async function generatePrompts(params: {
   scene: string;
   style: string;

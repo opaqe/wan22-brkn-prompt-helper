@@ -80,12 +80,23 @@ export async function generateCaptionAndCharacter(params: {
   console.log('[LLM Router] generateCaptionAndCharacter called with provider:', provider);
   
   try {
-    // For now, only Gemini has the three-part implementation
-    // Other providers will be added soon
-    if (provider !== 'gemini') {
-      console.warn(`[LLM Router] Three-part generation not yet implemented for "${provider}". Using Gemini.`);
+    switch (provider) {
+      case 'qwen':
+        const qwenSvc = await import('../providers/qwenService');
+        return await qwenSvc.generateCaptionAndCharacter(params);
+      case 'ollama':
+        const ollamaSvc = await import('../providers/ollamaService');
+        return await ollamaSvc.generateCaptionAndCharacter(params);
+      case 'lmstudio':
+        const lmStudioSvc = await import('../providers/lmStudioService');
+        return await lmStudioSvc.generateCaptionAndCharacter(params);
+      case 'gemini':
+      default:
+        if (provider !== 'gemini') {
+          console.warn(`[LLM Router] Provider "${provider}" not fully implemented. Falling back to Gemini.`);
+        }
+        return await geminiGenerateCaptionAndCharacter(params);
     }
-    return await geminiGenerateCaptionAndCharacter(params);
   } catch (error) {
     console.error('[LLM Router] Error in generateCaptionAndCharacter:', error);
     throw error;
@@ -102,10 +113,23 @@ export async function generateActionDescription(params: {
   console.log('[LLM Router] generateActionDescription called with provider:', provider);
   
   try {
-    if (provider !== 'gemini') {
-      console.warn(`[LLM Router] Three-part generation not yet implemented for "${provider}". Using Gemini.`);
+    switch (provider) {
+      case 'qwen':
+        const qwenSvc = await import('../providers/qwenService');
+        return await qwenSvc.generateActionDescription(params);
+      case 'ollama':
+        const ollamaSvc = await import('../providers/ollamaService');
+        return await ollamaSvc.generateActionDescription(params);
+      case 'lmstudio':
+        const lmStudioSvc = await import('../providers/lmStudioService');
+        return await lmStudioSvc.generateActionDescription(params);
+      case 'gemini':
+      default:
+        if (provider !== 'gemini') {
+          console.warn(`[LLM Router] Provider "${provider}" not fully implemented. Falling back to Gemini.`);
+        }
+        return await geminiGenerateActionDescription(params);
     }
-    return await geminiGenerateActionDescription(params);
   } catch (error) {
     console.error('[LLM Router] Error in generateActionDescription:', error);
     throw error;
@@ -125,10 +149,23 @@ export async function generateFinalPrompts(params: {
   console.log('[LLM Router] generateFinalPrompts called with provider:', provider);
   
   try {
-    if (provider !== 'gemini') {
-      console.warn(`[LLM Router] Three-part generation not yet implemented for "${provider}". Using Gemini.`);
+    switch (provider) {
+      case 'qwen':
+        const qwenSvc = await import('../providers/qwenService');
+        return await qwenSvc.generateFinalPrompts(params);
+      case 'ollama':
+        const ollamaSvc = await import('../providers/ollamaService');
+        return await ollamaSvc.generateFinalPrompts(params);
+      case 'lmstudio':
+        const lmStudioSvc = await import('../providers/lmStudioService');
+        return await lmStudioSvc.generateFinalPrompts(params);
+      case 'gemini':
+      default:
+        if (provider !== 'gemini') {
+          console.warn(`[LLM Router] Provider "${provider}" not fully implemented. Falling back to Gemini.`);
+        }
+        return await geminiGenerateFinalPrompts(params);
     }
-    return await geminiGenerateFinalPrompts(params);
   } catch (error) {
     console.error('[LLM Router] Error in generateFinalPrompts:', error);
     throw error;
