@@ -1,6 +1,6 @@
 
 import React, { useState, useCallback, FormEvent, useRef, useEffect } from 'react';
-import { generatePrompts, generateCaptionFromImage, getActiveProvider as getActiveLLMProvider, setActiveProvider as setActiveLLMProvider, getApiKey as getStoredApiKey, setApiKey as storeApiKey, clearApiKey as removeApiKey, PROVIDERS, type LLMProvider } from './services/llm/router.ts';
+import { generateCaptionAndCharacter, generateActionDescription, generateFinalPrompts, generateCaptionFromImage, getActiveProvider as getActiveLLMProvider, setActiveProvider as setActiveLLMProvider, getApiKey as getStoredApiKey, setApiKey as storeApiKey, clearApiKey as removeApiKey, PROVIDERS, type LLMProvider } from './services/llm/router.ts';
 import { VideoPrompt } from './types.ts';
 import Header from './components/Header.tsx';
 import Footer from './components/Footer.tsx';
@@ -352,6 +352,8 @@ const App: React.FC = () => {
   const [prompts, setPrompts] = useState<VideoPrompt[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [loadingStep, setLoadingStep] = useState<string>('');
+  const [stepProgress, setStepProgress] = useState<number>(0);
 
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imageBase64, setImageBase64] = useState<string | null>(null);
@@ -473,25 +475,51 @@ const App: React.FC = () => {
     e.preventDefault();
     if (!scene.trim() || loading || lighting.length === 0 || !isApiKeySet) return;
 
-    console.log('[App] Starting handleGeneratePrompts...');
+    console.log('[App] Starting 3-part prompt generation...');
     console.log('[App] Active provider:', activeProvider);
     setLoading(true);
     setError(null);
     setPrompts([]);
+    setLoadingStep('');
+    setStepProgress(0);
 
     try {
-      console.log('[App] Calling generatePrompts...');
-      const generatedPrompts = await generatePrompts({ 
-        scene, 
-        style: [...style, ...nsfwStyle].filter(Boolean).join(', '), 
-        protagonistAction: protagonistAction.join(', '), 
-        cameraAngle: cameraAngle.join(', '), 
-        cameraMovement: cameraMovement.join(', '), 
+      // Part 1: Caption & Character
+      setLoadingStep('Step 1/3: Generating scene & character details...');
+      setStepProgress(33);
+      console.log('[App] Part 1: Calling generateCaptionAndCharacter...');
+      const refinedScene = await generateCaptionAndCharacter({
+        scene,
+        style: [...style, ...nsfwStyle].filter(Boolean).join(', '),
+        isNsfw: isNsfwMode,
+      });
+      console.log('[App] Part 1 complete:', refinedScene.substring(0, 100));
+
+      // Part 2: Action & Scene Dynamics
+      setLoadingStep('Step 2/3: Adding action & dynamics...');
+      setStepProgress(66);
+      console.log('[App] Part 2: Calling generateActionDescription...');
+      const actionDescription = await generateActionDescription({
+        refinedScene,
+        protagonistAction: protagonistAction.join(', '),
+        isNsfw: isNsfwMode,
+      });
+      console.log('[App] Part 2 complete:', actionDescription.substring(0, 100));
+
+      // Part 3: Camera & Cinematography
+      setLoadingStep('Step 3/3: Crafting final cinematic prompts...');
+      setStepProgress(100);
+      console.log('[App] Part 3: Calling generateFinalPrompts...');
+      const generatedPrompts = await generateFinalPrompts({
+        actionDescription,
+        cameraAngle: cameraAngle.join(', '),
+        cameraMovement: cameraMovement.join(', '),
         lighting: lighting.join(', '),
         isNsfw: isNsfwMode,
         cameraDevice: cameraDevice.join(', '),
       });
-      console.log('[App] Prompt generation successful, received', generatedPrompts.length, 'prompts');
+      
+      console.log('[App] All 3 parts complete! Generated', generatedPrompts.length, 'prompts');
       setPrompts(generatedPrompts);
     } catch (err) {
       console.error('[App] Error in handleGeneratePrompts:', err);
@@ -500,15 +528,27 @@ const App: React.FC = () => {
       setError(errorMsg);
     } finally {
       setLoading(false);
+      setLoadingStep('');
+      setStepProgress(0);
     }
-  }, [scene, style, nsfwStyle, protagonistAction, cameraAngle, cameraMovement, cameraDevice, lighting, loading, isNsfwMode, activeProvider]);
+  }, [scene, style, nsfwStyle, protagonistAction, cameraAngle, cameraMovement, cameraDevice, lighting, loading, isNsfwMode, activeProvider, isApiKeySet]);
 
   const renderContent = () => {
     if (loading) {
       return (
         <div className="flex flex-col items-center justify-center text-center mt-12">
           <Loader />
-          <p className="mt-4 text-zinc-400">Crafting your video prompts...</p>
+          <p className="mt-4 text-zinc-400">{loadingStep || 'Crafting your video prompts...'}</p>
+          {stepProgress > 0 && (
+            <div className="w-full max-w-md mt-4">
+              <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-red-500 transition-all duration-500 ease-out"
+                  style={{ width: `${stepProgress}%` }}
+                />
+              </div>
+            </div>
+          )}
         </div>
       );
     }

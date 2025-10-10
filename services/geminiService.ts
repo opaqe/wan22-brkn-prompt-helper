@@ -286,6 +286,151 @@ Video Prompt: "${promptText}"`;
     }
 };
 
+// Part 1: Generate Caption & Character description
+export const generateCaptionAndCharacter = async (params: {
+  scene: string;
+  style: string;
+  isNsfw: boolean;
+}): Promise<string> => {
+  try {
+    console.log('[Gemini] Part 1: Generating Caption & Character...');
+    const { scene, style, isNsfw } = params;
+
+    const systemInstruction = isNsfw 
+      ? 'You are a master visual storyteller with expertise in mature, adult 18+ themes. Focus on vivid character descriptions and atmospheric scene details suitable for an adult audience.'
+      : 'You are a master visual storyteller. Focus on vivid character descriptions and atmospheric scene details.';
+
+    const prompt = `${systemInstruction}
+
+Based on this scene description and visual style, create a refined, detailed caption focusing on WHO is in the scene and WHERE it takes place. Include character physical details, setting atmosphere, and mood.
+
+**Scene:** "${scene}"
+**Visual Style:** "${style}"
+
+Generate a rich 60-80 word description that captures the essence of the characters and setting. Make it vivid and cinematic.`;
+
+    const model = getAI().getGenerativeModel({ 
+      model: "gemini-2.5-flash",
+      generationConfig: {
+        temperature: isNsfw ? 0.9 : 0.7,
+      }
+    });
+    
+    const response = await model.generateContent(prompt);
+    const result = response.response.text().trim();
+    console.log('[Gemini] Part 1 complete:', result.substring(0, 100));
+    return result;
+
+  } catch (error) {
+    console.error("[Gemini] Error in Part 1:", error);
+    throw new Error(`Part 1 failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+};
+
+// Part 2: Generate Action & Scene Dynamics
+export const generateActionDescription = async (params: {
+  refinedScene: string;
+  protagonistAction: string;
+  isNsfw: boolean;
+}): Promise<string> => {
+  try {
+    console.log('[Gemini] Part 2: Generating Action Description...');
+    const { refinedScene, protagonistAction, isNsfw } = params;
+
+    const systemInstruction = isNsfw
+      ? 'You are a master visual storyteller with expertise in mature themes. Focus on describing WHAT is happening in the scene with vivid action details.'
+      : 'You are a master visual storyteller. Focus on describing WHAT is happening in the scene with vivid action details.';
+
+    const prompt = `${systemInstruction}
+
+Building on this scene foundation, add detailed action and dynamic elements. Focus on WHAT is happening.
+
+**Scene Foundation:** "${refinedScene}"
+**Action:** "${protagonistAction}"
+
+Generate a 60-80 word description that adds action, movement, and emotional dynamics to the scene. Maintain continuity with the scene foundation.`;
+
+    const model = getAI().getGenerativeModel({ 
+      model: "gemini-2.5-flash",
+      generationConfig: {
+        temperature: isNsfw ? 0.9 : 0.7,
+      }
+    });
+    
+    const response = await model.generateContent(prompt);
+    const result = response.response.text().trim();
+    console.log('[Gemini] Part 2 complete:', result.substring(0, 100));
+    return result;
+
+  } catch (error) {
+    console.error("[Gemini] Error in Part 2:", error);
+    throw new Error(`Part 2 failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+};
+
+// Part 3: Generate Final Prompts with Camera & Cinematography
+export const generateFinalPrompts = async (params: {
+  actionDescription: string;
+  cameraAngle: string;
+  cameraMovement: string;
+  lighting: string;
+  isNsfw: boolean;
+  cameraDevice?: string;
+}): Promise<VideoPrompt[]> => {
+  try {
+    console.log('[Gemini] Part 3: Generating Final Prompts with Camera...');
+    const { actionDescription, cameraAngle, cameraMovement, lighting, isNsfw, cameraDevice } = params;
+
+    const systemInstruction = isNsfw
+      ? 'You are a master cinematographer with expertise in mature, adult 18+ visual content. Focus on HOW the scene is captured - camera work, lighting, and visual presentation.'
+      : 'You are a master cinematographer. Focus on HOW the scene is captured - camera work, lighting, and visual presentation.';
+
+    const examples = `**Example:** "The camera pulls back slowly from a close-up, revealing golden hour sunlight streaming through dusty windows, casting long dramatic shadows across the hardwood floor as the protagonist turns toward the light."`;
+
+    const prompt = `${systemInstruction}
+
+Generate 3 distinct video prompt variations (80-120 words each) that complete this scene by adding camera work and lighting. Each variation should seamlessly integrate the camera angle, movement, and lighting into the narrative.
+
+**Scene with Action:** "${actionDescription}"
+**Camera Angle:** "${cameraAngle}"
+**Camera Movement:** "${cameraMovement}"
+**Lighting:** "${lighting}"
+**Camera/Device:** "${cameraDevice || 'cinematic camera'}"
+
+For each variation:
+1. Write camera work directly into the narrative (don't just list technical specs)
+2. Create a cohesive, cinematic description
+3. Include a short, creative title
+
+${examples}`;
+
+    const model = getAI().getGenerativeModel({ 
+      model: "gemini-2.5-flash",
+      generationConfig: {
+        responseMimeType: "application/json",
+        responseSchema: promptsSchema,
+        temperature: isNsfw ? 0.9 : 0.8,
+      }
+    });
+    
+    const response = await model.generateContent(prompt);
+    const jsonText = response.response.text().trim();
+    const generatedPrompts = extractJson<VideoPrompt[]>(jsonText);
+    
+    if (!Array.isArray(generatedPrompts)) {
+      throw new Error("API did not return an array of prompts.");
+    }
+
+    console.log('[Gemini] Part 3 complete, generated', generatedPrompts.length, 'prompts');
+    return generatedPrompts as VideoPrompt[];
+
+  } catch (error) {
+    console.error("[Gemini] Error in Part 3:", error);
+    throw new Error(`Part 3 failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+};
+
+// Legacy function kept for backward compatibility
 export const generatePrompts = async (params: PromptGenerationParams): Promise<VideoPrompt[]> => {
   try {
     console.log('Starting generatePrompts...');

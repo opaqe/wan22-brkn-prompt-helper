@@ -6,6 +6,9 @@ import {
   generatePrompts as geminiGeneratePrompts,
   generateCaptionFromImage as geminiGenerateCaption,
   transformPromptToJson as geminiTransformToJson,
+  generateCaptionAndCharacter as geminiGenerateCaptionAndCharacter,
+  generateActionDescription as geminiGenerateActionDescription,
+  generateFinalPrompts as geminiGenerateFinalPrompts,
 } from '../geminiService';
 import {
   generatePrompts as qwenGeneratePrompts,
@@ -67,7 +70,72 @@ export function clearApiKey(provider: LLMProvider = getActiveProvider()) {
   localStorage.removeItem(keyName);
 }
 
-// Public API that mirrors the original Gemini service
+// Part 1: Caption & Character Generation
+export async function generateCaptionAndCharacter(params: {
+  scene: string;
+  style: string;
+  isNsfw: boolean;
+}): Promise<string> {
+  const provider = getActiveProvider();
+  console.log('[LLM Router] generateCaptionAndCharacter called with provider:', provider);
+  
+  try {
+    // For now, only Gemini has the three-part implementation
+    // Other providers will be added soon
+    if (provider !== 'gemini') {
+      console.warn(`[LLM Router] Three-part generation not yet implemented for "${provider}". Using Gemini.`);
+    }
+    return await geminiGenerateCaptionAndCharacter(params);
+  } catch (error) {
+    console.error('[LLM Router] Error in generateCaptionAndCharacter:', error);
+    throw error;
+  }
+}
+
+// Part 2: Action & Scene Dynamics
+export async function generateActionDescription(params: {
+  refinedScene: string;
+  protagonistAction: string;
+  isNsfw: boolean;
+}): Promise<string> {
+  const provider = getActiveProvider();
+  console.log('[LLM Router] generateActionDescription called with provider:', provider);
+  
+  try {
+    if (provider !== 'gemini') {
+      console.warn(`[LLM Router] Three-part generation not yet implemented for "${provider}". Using Gemini.`);
+    }
+    return await geminiGenerateActionDescription(params);
+  } catch (error) {
+    console.error('[LLM Router] Error in generateActionDescription:', error);
+    throw error;
+  }
+}
+
+// Part 3: Final Camera & Cinematography
+export async function generateFinalPrompts(params: {
+  actionDescription: string;
+  cameraAngle: string;
+  cameraMovement: string;
+  lighting: string;
+  isNsfw: boolean;
+  cameraDevice?: string;
+}): Promise<VideoPrompt[]> {
+  const provider = getActiveProvider();
+  console.log('[LLM Router] generateFinalPrompts called with provider:', provider);
+  
+  try {
+    if (provider !== 'gemini') {
+      console.warn(`[LLM Router] Three-part generation not yet implemented for "${provider}". Using Gemini.`);
+    }
+    return await geminiGenerateFinalPrompts(params);
+  } catch (error) {
+    console.error('[LLM Router] Error in generateFinalPrompts:', error);
+    throw error;
+  }
+}
+
+// Legacy: Public API that mirrors the original Gemini service (kept for backward compatibility)
 export async function generatePrompts(params: {
   scene: string;
   style: string;
