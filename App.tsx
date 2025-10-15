@@ -620,7 +620,7 @@ const App: React.FC = () => {
               <CardHeader>
                 <CardTitle className="text-blue-300">🔑 API Key Required</CardTitle>
                 <CardDescription className="text-zinc-400">
-                  Select your provider and enter its API key. Keys are stored locally in your browser. Note: only Google Gemini is used right now; others will be supported soon.
+                  Select your provider and enter its credentials. All settings are stored locally in your browser. LM Studio default address: http://localhost:1234
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
