@@ -4,8 +4,8 @@ import type { VideoPrompt } from '../../types';
 
 const LM_STUDIO_BASE_URL_KEY = 'LM_STUDIO_BASE_URL';
 const LM_STUDIO_MODEL_KEY = 'LM_STUDIO_MODEL';
-const DEFAULT_BASE_URL = 'http://192.168.2.43:1234';
-const DEFAULT_MODEL = 'internvl3_5-14b';
+const DEFAULT_BASE_URL = 'http://localhost:1234';
+const DEFAULT_MODEL = 'lmstudio-community/Meta-Llama-3.1-8B-Instruct-GGUF';
 
 function getBaseUrl(): string {
   try {
