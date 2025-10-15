@@ -197,7 +197,7 @@ This app supports multiple providers via the in-app Settings dialog:
 - **Setup**: Install [Ollama](https://ollama.ai/) and run: `ollama pull qwen2.5-vl:32b`
 
 #### **LM Studio (Local)** ✨ New!
-- **Base URL**: `http://localhost:1234` (default, configurable)
+- **Base URL**: `http://192.168.2.43:1234` (default, configurable)
 - **Model**: Any loaded vision-capable model (configurable)
 - **Setup**: Install [LM Studio](https://lmstudio.ai/), load a model, and start the local server
 
@@ -216,7 +216,7 @@ This app supports multiple providers via the in-app Settings dialog:
   - `GEMINI_API_KEY`, `GEMINI_BASE_URL` (optional)
   - `QWEN_API_KEY`, `QWEN_BASE_URL`
   - `OLLAMA_BASE_URL`, `OLLAMA_MODEL`
-  - `LM_STUDIO_BASE_URL`, `LM_STUDIO_MODEL`
+  - `LM_STUDIO_BASE_URL` (default: `http://192.168.2.43:1234`), `LM_STUDIO_MODEL`
   - Plus keys for other providers: `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, etc.
 - The active provider is stored under `LLM_PROVIDER`.
 
