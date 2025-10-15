@@ -185,22 +185,22 @@ export async function generateCaptionAndCharacter(params: {
       role: 'system',
       content: isNsfw
         ? 'You are a master visual storyteller for adult content. Describe scenes with rich physical and sensory details.'
-        : 'You are a master visual storyteller for cinematic content. Describe scenes with rich visual and sensory details.'
+        : 'You create WAN 2.2 video prompts. Focus on precise subject and scene descriptions.'
     },
     {
       role: 'user',
-      content: `Refine and expand this scene description with rich character and environmental details (80-120 words).
+      content: `Create a detailed subject and scene description (60-80 words) following WAN 2.2 structure.
 
 Scene: "${scene}"
 Visual Style: "${style}"
 
-When describing people, include:
-- Physical characteristics (ethnicity, build, features)
-- What they're wearing/doing
-- Emotional atmosphere
-- Sensory details (textures, sounds, mood)
+Structure your description:
+1. **Subject Description**: Describe the main subject/character in detail (who they are, appearance, clothing)
+2. **Scene Setting**: Describe the environment and background (where this takes place, atmosphere)
 
-Return ONLY the refined scene description as plain text (no JSON, no extra formatting).`
+Example: "A young woman in a red dress holding a glowing umbrella, in a bustling neon-lit city street at night"
+
+Return ONLY the description as plain text (no JSON, no labels).`
     }
   ];
 
@@ -220,22 +220,22 @@ export async function generateActionDescription(params: {
       role: 'system',
       content: isNsfw
         ? 'You are a master visual storyteller for adult content. Describe character actions with sensory and emotional depth.'
-        : 'You are a master visual storyteller for cinematic content. Describe character actions with dynamic detail.'
+        : 'You create WAN 2.2 video prompts. Focus on motion and character movement.'
     },
     {
       role: 'user',
-      content: `Build on this scene by adding dynamic action and movement (60-100 words).
+      content: `Add motion details to this scene (50-70 words) following WAN 2.2 structure.
 
 Scene: "${refinedScene}"
-Action to incorporate: "${protagonistAction}"
+Action: "${protagonistAction}"
 
-Describe:
-- How the action unfolds moment-by-moment
-- Body language and expression
-- Interaction with environment
-- Emotional undercurrent
+Structure your description:
+- **Motion & Character Action**: Describe how the character/subject moves and what they're doing
+- Keep it dynamic and specific
 
-Return ONLY the action description as plain text (no JSON, no extra formatting).`
+Example: "slowly walking forward while looking over her shoulder, hair flowing in the wind"
+
+Return ONLY the motion description as plain text (no JSON, no labels).`
     }
   ];
 
@@ -258,11 +258,11 @@ export async function generateFinalPrompts(params: {
       role: 'system',
       content: isNsfw
         ? 'You are a master cinematographer for adult content. Create complete video prompts with camera work. Output JSON only.'
-        : 'You are a master cinematographer for cinematic content. Create complete video prompts with camera work. Output JSON only.'
+        : 'You create WAN 2.2 video prompts. Combine subject, scene, motion, camera work, and visual style. Output JSON only.'
     },
     {
       role: 'user',
-      content: `Generate 3 video prompt variations as a JSON array. Each item has {"title": string, "prompt": string}.
+      content: `Generate 3 complete WAN 2.2 video prompt variations as a JSON array. Each item has {"title": string, "prompt": string}.
 
 Scene & Action: "${actionDescription}"
 Camera Angle: "${cameraAngle}"
@@ -270,11 +270,12 @@ Camera Movement: "${cameraMovement}"
 Camera/Device: "${cameraDevice ?? 'cinematic camera'}"
 Lighting: "${lighting}"
 
-Rules:
-- 80-120 words each (max 140)
-- Seamlessly weave camera angle and movement into the narrative
-- Include lighting and mood
-- Each variation should feel complete and cinematic
+WAN 2.2 Structure (80-120 words each):
+[Subject] + [Scene] + [Motion] + [Camera Work] + [Visual Style/Lighting]
+
+Example: "A lone cowboy riding through a desert canyon, sunset lighting, drone tracking shot, cinematic grading"
+
+Integrate camera angle and movement naturally into the narrative. Each variation should be complete and cinematic.
 
 Return ONLY a JSON array of 3 prompts.`
     }

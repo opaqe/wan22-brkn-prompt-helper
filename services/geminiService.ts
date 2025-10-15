@@ -298,16 +298,22 @@ export const generateCaptionAndCharacter = async (params: {
 
     const systemInstruction = isNsfw 
       ? 'You are a master visual storyteller with expertise in mature, adult 18+ themes. Focus on vivid character descriptions and atmospheric scene details suitable for an adult audience.'
-      : 'You are a master visual storyteller. Focus on vivid character descriptions and atmospheric scene details.';
+      : 'You create WAN 2.2 video prompts. Focus on precise subject and scene descriptions.';
 
     const prompt = `${systemInstruction}
 
-Based on this scene description and visual style, create a refined, detailed caption focusing on WHO is in the scene and WHERE it takes place. Include character physical details, setting atmosphere, and mood.
+Create a detailed subject and scene description (60-80 words) following WAN 2.2 structure.
 
 **Scene:** "${scene}"
 **Visual Style:** "${style}"
 
-Generate a rich 60-80 word description that captures the essence of the characters and setting. Make it vivid and cinematic.`;
+Structure your description:
+1. **Subject Description**: Describe the main subject/character in detail (who they are, appearance, clothing)
+2. **Scene Setting**: Describe the environment and background (where this takes place, atmosphere)
+
+Example: "A young woman in a red dress holding a glowing umbrella, in a bustling neon-lit city street at night"
+
+Generate a vivid description following this structure.`;
 
     const model = getAI().getGenerativeModel({ 
       model: "gemini-2.5-flash",
@@ -339,16 +345,22 @@ export const generateActionDescription = async (params: {
 
     const systemInstruction = isNsfw
       ? 'You are a master visual storyteller with expertise in mature themes. Focus on describing WHAT is happening in the scene with vivid action details.'
-      : 'You are a master visual storyteller. Focus on describing WHAT is happening in the scene with vivid action details.';
+      : 'You create WAN 2.2 video prompts. Focus on motion and character movement.';
 
     const prompt = `${systemInstruction}
 
-Building on this scene foundation, add detailed action and dynamic elements. Focus on WHAT is happening.
+Add motion details to this scene (50-70 words) following WAN 2.2 structure.
 
 **Scene Foundation:** "${refinedScene}"
 **Action:** "${protagonistAction}"
 
-Generate a 60-80 word description that adds action, movement, and emotional dynamics to the scene. Maintain continuity with the scene foundation.`;
+Structure your description:
+- **Motion & Character Action**: Describe how the character/subject moves and what they're doing
+- Keep it dynamic and specific
+
+Example: "slowly walking forward while looking over her shoulder, hair flowing in the wind"
+
+Generate a vivid motion description.`;
 
     const model = getAI().getGenerativeModel({ 
       model: "gemini-2.5-flash",
@@ -383,13 +395,13 @@ export const generateFinalPrompts = async (params: {
 
     const systemInstruction = isNsfw
       ? 'You are a master cinematographer with expertise in mature, adult 18+ visual content. Focus on HOW the scene is captured - camera work, lighting, and visual presentation.'
-      : 'You are a master cinematographer. Focus on HOW the scene is captured - camera work, lighting, and visual presentation.';
+      : 'You create WAN 2.2 video prompts. Combine subject, scene, motion, camera work, and visual style.';
 
-    const examples = `**Example:** "The camera pulls back slowly from a close-up, revealing golden hour sunlight streaming through dusty windows, casting long dramatic shadows across the hardwood floor as the protagonist turns toward the light."`;
+    const examples = `**Example:** "A lone cowboy riding through a desert canyon, sunset lighting, drone tracking shot, cinematic grading"`;
 
     const prompt = `${systemInstruction}
 
-Generate 3 distinct video prompt variations (80-120 words each) that complete this scene by adding camera work and lighting. Each variation should seamlessly integrate the camera angle, movement, and lighting into the narrative.
+Generate 3 complete WAN 2.2 video prompt variations (80-120 words each) as JSON. Each item has {"title": string, "prompt": string}.
 
 **Scene with Action:** "${actionDescription}"
 **Camera Angle:** "${cameraAngle}"
@@ -397,12 +409,12 @@ Generate 3 distinct video prompt variations (80-120 words each) that complete th
 **Lighting:** "${lighting}"
 **Camera/Device:** "${cameraDevice || 'cinematic camera'}"
 
-For each variation:
-1. Write camera work directly into the narrative (don't just list technical specs)
-2. Create a cohesive, cinematic description
-3. Include a short, creative title
+WAN 2.2 Structure:
+[Subject] + [Scene] + [Motion] + [Camera Work] + [Visual Style/Lighting]
 
-${examples}`;
+${examples}
+
+Integrate camera angle and movement naturally into the narrative. Each variation should be complete and cinematic with a creative title.`;
 
     const model = getAI().getGenerativeModel({ 
       model: "gemini-2.5-flash",
