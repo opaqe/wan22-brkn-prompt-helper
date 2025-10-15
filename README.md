@@ -41,24 +41,32 @@ The provided batch files (`install-windows.bat` and `start-ui.bat`) are compatib
 
 ## 🚀 Recent Updates
 
-### Version 2.2.1 - Multi-Select & Enhanced AI Caption Generation
+### Version 2.3.0 - Three-Part Generation System & Enhanced Prompting
 
-**✨ New UI Features:**
-- **Multi-Select Dropdowns** - Select multiple options for Style, NSFW Style, Protagonist Actions, Camera Angles, Camera Movements, Device Types, and Lighting
-- **Tag Display** - Selected options shown as removable tags for better visibility
-- **Grouped Options** - Organized multi-select options by category for easier navigation
+**🎯 Three-Part Prompt Generation:**
+- **Progressive Building** - Generates prompts in three stages to avoid token limits and improve quality
+  - Part 1: Caption & Character (Subject + Scene descriptions)
+  - Part 2: Action & Scene Dynamics (Motion details)
+  - Part 3: Camera & Cinematography (Final prompts with camera work)
+- **Visual Feedback** - Progress bar and step indicators show generation status
+- **Better Quality** - More focused AI attention on each aspect of the prompt
 
-**🎯 Enhanced AI Caption Generation:**
-- **Physical Description Guidance** - AI now leads with detailed physicality descriptions for protagonists
-- **Structured Prompting** - Includes race/ethnicity, hair, body type, breast size, and notable features
-- **Action & Sensory Details** - Follows physical descriptions with actions and sensory information
-- **SFW & NSFW Support** - Enhanced prompting for both content types with appropriate detail levels
+**✨ WAN 2.2 Structure Compliance:**
+- **Proper Structure** - Follows official WAN 2.2 framework: [Subject] + [Scene] + [Motion] + [Camera Work] + [Visual Style/Lighting]
+- **Normal Mode** - Optimized for standard cinematic video generation
+- **NSFW Mode** - Action-focused with explicit, anatomically precise descriptions
+- **No Euphemisms** - NSFW mode uses proper terminology and detailed physical interactions
 
-**🤖 Technical Improvements:**
-- **Updated Gemini Model** - Now using `gemini-2.5-flash` for improved performance
-- **Better JSON Parsing** - Enhanced error handling and malformed JSON cleanup across all providers
-- **Improved LM Studio Integration** - Better handling of non-standard JSON responses
-- **Provider-Specific Enhancements** - Updated Gemini, Qwen, Ollama, and LM Studio services with enhanced prompting
+**🤖 Enhanced AI Instructions:**
+- **Action Priority** - NSFW mode emphasizes detailed action descriptions with specific body parts, movements, and positions
+- **Explicit Clarity** - Uses anatomically correct terms and explicit verbs for NSFW content
+- **Provider Support** - All providers (Gemini, Qwen, Ollama, LM Studio) support the new system
+
+**🎨 Previous Features (v2.2.1):**
+- Multi-Select Dropdowns for all creative controls
+- Enhanced AI Caption Generation with physical descriptions
+- Updated Gemini Model (`gemini-2.5-flash`)
+- Improved JSON parsing across all providers
 
 ### Version 2.2 - Multi-Provider Support & Enhanced Windows Compatibility
 
