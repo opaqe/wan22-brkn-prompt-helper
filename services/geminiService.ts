@@ -297,7 +297,7 @@ export const generateCaptionAndCharacter = async (params: {
     const { scene, style, isNsfw } = params;
 
     const systemInstruction = isNsfw 
-      ? 'You are a master visual storyteller with expertise in mature, adult 18+ themes. Focus on vivid character descriptions and atmospheric scene details suitable for an adult audience.'
+      ? 'You are an expert adult content video prompt writer. Use explicit, anatomically precise terminology. Describe bodies, actions, and sensations with maximum detail and clarity. Never use vague euphemisms - use proper anatomical terms and explicit action verbs.'
       : 'You create WAN 2.2 video prompts. Focus on precise subject and scene descriptions.';
 
     const prompt = `${systemInstruction}
@@ -344,7 +344,7 @@ export const generateActionDescription = async (params: {
     const { refinedScene, protagonistAction, isNsfw } = params;
 
     const systemInstruction = isNsfw
-      ? 'You are a master visual storyteller with expertise in mature themes. Focus on describing WHAT is happening in the scene with vivid action details.'
+      ? 'You are an expert adult content video prompt writer. THE ACTION IS THE MOST IMPORTANT ELEMENT. Describe exactly what is happening with explicit detail: specific body parts involved, precise movements, exact positions, and physical interactions. Use anatomically correct terms and explicit action verbs. Be extremely detailed and clear - no vague language or euphemisms.'
       : 'You create WAN 2.2 video prompts. Focus on motion and character movement.';
 
     const prompt = `${systemInstruction}
@@ -394,7 +394,7 @@ export const generateFinalPrompts = async (params: {
     const { actionDescription, cameraAngle, cameraMovement, lighting, isNsfw, cameraDevice } = params;
 
     const systemInstruction = isNsfw
-      ? 'You are a master cinematographer with expertise in mature, adult 18+ visual content. Focus on HOW the scene is captured - camera work, lighting, and visual presentation.'
+      ? 'You are an expert adult content cinematographer. Create complete, explicit video prompts. PRIORITIZE THE ACTION - be extremely specific about what is happening physically. Use anatomically correct terms and explicit verbs. Describe the exact movements, positions, and physical interactions in detail. Output JSON only.'
       : 'You create WAN 2.2 video prompts. Combine subject, scene, motion, camera work, and visual style.';
 
     const examples = `**Example:** "A lone cowboy riding through a desert canyon, sunset lighting, drone tracking shot, cinematic grading"`;

@@ -193,7 +193,7 @@ export async function generateCaptionAndCharacter(params: {
   const system = {
     role: 'system',
     content: isNsfw
-      ? 'You are a master visual storyteller for adult content. Describe scenes with rich physical and sensory details.'
+      ? 'You are an expert adult content video prompt writer. Use explicit, anatomically precise terminology. Describe bodies, actions, and sensations with maximum detail and clarity. Never use vague euphemisms - use proper anatomical terms and explicit action verbs.'
       : 'You create WAN 2.2 video prompts. Focus on precise subject and scene descriptions.'
   };
 
@@ -231,7 +231,7 @@ export async function generateActionDescription(params: {
   const system = {
     role: 'system',
     content: isNsfw
-      ? 'You are a master visual storyteller for adult content. Describe character actions with sensory and emotional depth.'
+      ? 'You are an expert adult content video prompt writer. THE ACTION IS THE MOST IMPORTANT ELEMENT. Describe exactly what is happening with explicit detail: specific body parts involved, precise movements, exact positions, and physical interactions. Use anatomically correct terms and explicit action verbs. Be extremely detailed and clear - no vague language or euphemisms.'
       : 'You create WAN 2.2 video prompts. Focus on motion and character movement.'
   };
 
@@ -272,7 +272,7 @@ export async function generateFinalPrompts(params: {
   const system = {
     role: 'system',
     content: isNsfw
-      ? 'You are a master cinematographer for adult content. Create complete video prompts with camera work. Output JSON only.'
+      ? 'You are an expert adult content cinematographer. Create complete, explicit video prompts. PRIORITIZE THE ACTION - be extremely specific about what is happening physically. Use anatomically correct terms and explicit verbs. Describe the exact movements, positions, and physical interactions in detail. Output JSON only.'
       : 'You create WAN 2.2 video prompts. Combine subject, scene, motion, camera work, and visual style. Output JSON only.'
   };
 
