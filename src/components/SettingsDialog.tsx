@@ -148,7 +148,7 @@ const SettingsDialog: React.FC = () => {
           </div>
 
           {provider === 'gemini' && (
-            <div className="grid gap-3">
+            <div className="grid gap-3 p-4 rounded-lg bg-primary/5 border border-primary/20">
               <div className="grid gap-2">
                 <Label htmlFor="gemini-key">Gemini API Key</Label>
                 <Input
@@ -169,13 +169,12 @@ const SettingsDialog: React.FC = () => {
                   onChange={(e) => setGeminiBase(e.target.value)}
                   aria-label="Gemini Base URL"
                 />
-                <p className="text-xs text-muted-foreground">Leave empty to use default Google endpoint.</p>
               </div>
             </div>
           )}
 
           {provider === 'qwen' && (
-            <div className="grid gap-3">
+            <div className="grid gap-3 p-4 rounded-lg bg-primary/5 border border-primary/20">
               <div className="grid gap-2">
                 <Label htmlFor="qwen-key">Qwen (DashScope) API Key</Label>
                 <Input
@@ -202,7 +201,7 @@ const SettingsDialog: React.FC = () => {
           )}
 
           {provider === 'ollama' && (
-            <div className="grid gap-3">
+            <div className="grid gap-3 p-4 rounded-lg bg-primary/5 border border-primary/20">
               <div className="grid gap-2">
                 <Label htmlFor="ollama-base">Ollama Base URL</Label>
                 <Input
@@ -228,7 +227,7 @@ const SettingsDialog: React.FC = () => {
           )}
 
           {provider === 'lmstudio' && (
-            <div className="grid gap-3">
+            <div className="grid gap-3 p-4 rounded-lg bg-primary/5 border border-primary/20">
               <div className="grid gap-2">
                 <Label htmlFor="lmstudio-base">LM Studio Base URL</Label>
                 <Input
