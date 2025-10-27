@@ -16,6 +16,14 @@ import {
   transformPromptToJson as qwenTransformToJson,
 } from '../providers/qwenService';
 import {
+  generatePrompts as openAiGeneratePrompts,
+  generateCaptionFromImage as openAiGenerateCaption,
+  transformPromptToJson as openAiTransformToJson,
+  generateCaptionAndCharacter as openAiGenerateCaptionAndCharacter,
+  generateActionDescription as openAiGenerateActionDescription,
+  generateFinalPrompts as openAiGenerateFinalPrompts,
+} from '../providers/openaiService';
+import {
   generatePrompts as ollamaGeneratePrompts,
   generateCaptionFromImage as ollamaGenerateCaption,
   transformPromptToJson as ollamaTransformToJson,
@@ -81,6 +89,9 @@ export async function generateCaptionAndCharacter(params: {
   
   try {
     switch (provider) {
+      case 'openai':
+        console.log('[LLM Router] Routing to OpenAI for caption & character...');
+        return await openAiGenerateCaptionAndCharacter(params);
       case 'qwen':
         const qwenSvc = await import('../providers/qwenService');
         return await qwenSvc.generateCaptionAndCharacter(params);
@@ -114,6 +125,9 @@ export async function generateActionDescription(params: {
   
   try {
     switch (provider) {
+      case 'openai':
+        console.log('[LLM Router] Routing to OpenAI for action description...');
+        return await openAiGenerateActionDescription(params);
       case 'qwen':
         const qwenSvc = await import('../providers/qwenService');
         return await qwenSvc.generateActionDescription(params);
@@ -150,6 +164,9 @@ export async function generateFinalPrompts(params: {
   
   try {
     switch (provider) {
+      case 'openai':
+        console.log('[LLM Router] Routing to OpenAI for final prompts...');
+        return await openAiGenerateFinalPrompts(params);
       case 'qwen':
         const qwenSvc = await import('../providers/qwenService');
         return await qwenSvc.generateFinalPrompts(params);
@@ -189,6 +206,9 @@ export async function generatePrompts(params: {
   
   try {
     switch (provider) {
+      case 'openai':
+        console.log('[LLM Router] Routing to OpenAI...');
+        return await openAiGeneratePrompts(params);
       case 'qwen':
         console.log('[LLM Router] Routing to Qwen...');
         return await qwenGeneratePrompts(params);
@@ -219,6 +239,9 @@ export async function generateCaptionFromImage(params: { imageData: string; mime
   
   try {
     switch (provider) {
+      case 'openai':
+        console.log('[LLM Router] Routing to OpenAI for captioning...');
+        return await openAiGenerateCaption(params);
       case 'qwen':
         console.log('[LLM Router] Routing to Qwen for captioning...');
         return await qwenGenerateCaption(params);
@@ -245,6 +268,8 @@ export async function generateCaptionFromImage(params: { imageData: string; mime
 export async function transformPromptToJson(promptText: string): Promise<object> {
   const provider = getActiveProvider();
   switch (provider) {
+    case 'openai':
+      return openAiTransformToJson(promptText);
     case 'qwen':
       return qwenTransformToJson(promptText);
     case 'ollama':
