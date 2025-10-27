@@ -9,7 +9,7 @@
     {
       "method": "shell.enter",
       "params": {
-        "message": "npm run dev -- --port 8080",
+        "message": "npm run dev -- --host opaqe.iptime.org --port 8001",
         "on": [
           {
             "event": "/(http:\\S.+)/",

@@ -9,7 +9,7 @@
     {
       "method": "shell.enter",
       "params": {
-        "message": "npm run build && npm run preview",
+        "message": "npm run build && npm run preview -- --host opaqe.iptime.org --port 8001",
         "on": [
           {
             "event": "/(http:\\S.+)/",

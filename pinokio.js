@@ -5,7 +5,7 @@ module.exports = {
       href: "install.json",
     },
     {
-      html: "<i class='fa-solid fa-play'></i> Start (dev :8080)",
+      html: "<i class='fa-solid fa-play'></i> Start (dev :8001)",
       href: "start.json",
     },
     {

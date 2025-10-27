@@ -7,8 +7,16 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, '.', '');
   return {
     server: {
-      host: "::",
-      port: 8080,
+      host: "0.0.0.0",
+      port: 8001,
+      hmr: {
+        host: "opaqe.iptime.org",
+        port: 8001,
+      },
+    },
+    preview: {
+      host: "0.0.0.0",
+      port: 8001,
     },
     plugins: [
       react(),
