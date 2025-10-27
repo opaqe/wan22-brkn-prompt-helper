@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 const ACTIVE_PROVIDER_KEY = 'LLM_PROVIDER';
 
 const KEYS = {
+  openai: 'OPENAI_API_KEY',
   gemini: 'GEMINI_API_KEY',
   geminiBase: 'GEMINI_BASE_URL',
   qwen: 'QWEN_API_KEY',
@@ -20,13 +21,14 @@ const KEYS = {
   lmStudioModel: 'LM_STUDIO_MODEL',
 } as const;
 
-type Provider = 'gemini' | 'qwen' | 'ollama' | 'lmstudio';
+type Provider = 'openai' | 'gemini' | 'qwen' | 'ollama' | 'lmstudio';
 
 const SettingsDialog: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [provider, setProvider] = useState<Provider>('gemini');
 
   // Fields
+  const [openAiKey, setOpenAiKey] = useState("");
   const [geminiKey, setGeminiKey] = useState("");
   const [geminiBase, setGeminiBase] = useState("");
   const [qwenKey, setQwenKey] = useState("");
@@ -40,6 +42,7 @@ const SettingsDialog: React.FC = () => {
     try {
       const p = (window.localStorage.getItem(ACTIVE_PROVIDER_KEY) as Provider) || 'gemini';
       setProvider(p);
+      setOpenAiKey(window.localStorage.getItem(KEYS.openai) || "");
       setGeminiKey(window.localStorage.getItem(KEYS.gemini) || "");
       setGeminiBase(window.localStorage.getItem(KEYS.geminiBase) || "");
       setQwenKey(window.localStorage.getItem(KEYS.qwen) || "");
@@ -56,7 +59,10 @@ const SettingsDialog: React.FC = () => {
   const handleSave = () => {
     try {
       window.localStorage.setItem(ACTIVE_PROVIDER_KEY, provider);
-      if (provider === 'gemini') {
+      if (provider === 'openai') {
+        window.localStorage.setItem(KEYS.openai, openAiKey.trim());
+        toast({ title: "Saved", description: "OpenAI settings stored locally." });
+      } else if (provider === 'gemini') {
         window.localStorage.setItem(KEYS.gemini, geminiKey.trim());
         if (geminiBase.trim()) {
           window.localStorage.setItem(KEYS.geminiBase, geminiBase.trim());
@@ -85,7 +91,10 @@ const SettingsDialog: React.FC = () => {
 
   const handleClear = () => {
     try {
-      if (provider === 'gemini') {
+      if (provider === 'openai') {
+        window.localStorage.removeItem(KEYS.openai);
+        setOpenAiKey("");
+      } else if (provider === 'gemini') {
         window.localStorage.removeItem(KEYS.gemini);
         window.localStorage.removeItem(KEYS.geminiBase);
         setGeminiKey("");
@@ -138,6 +147,7 @@ const SettingsDialog: React.FC = () => {
                 <SelectValue placeholder="Select a provider" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="openai">OpenAI</SelectItem>
                 <SelectItem value="gemini">Google Gemini</SelectItem>
                 <SelectItem value="qwen">Qwen (DashScope)</SelectItem>
                 <SelectItem value="ollama">Ollama (Local)</SelectItem>
@@ -146,6 +156,22 @@ const SettingsDialog: React.FC = () => {
             </Select>
             <p className="text-xs text-muted-foreground">Active provider is stored locally and used immediately.</p>
           </div>
+
+          {provider === 'openai' && (
+            <div className="grid gap-3 p-4 rounded-lg bg-primary/5 border border-primary/20">
+              <div className="grid gap-2">
+                <Label htmlFor="openai-key">OpenAI API Key</Label>
+                <Input
+                  id="openai-key"
+                  type="password"
+                  placeholder="Paste your OpenAI API key"
+                  value={openAiKey}
+                  onChange={(e) => setOpenAiKey(e.target.value)}
+                  aria-label="OpenAI API Key"
+                />
+              </div>
+            </div>
+          )}
 
           {provider === 'gemini' && (
             <div className="grid gap-3 p-4 rounded-lg bg-primary/5 border border-primary/20">
