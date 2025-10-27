@@ -24,7 +24,7 @@ Optional (for AI providers):
 
 3) Run the app in development
    - npm run dev   (or: bun run dev)
-   - App runs at: http://localhost:8080
+   - App runs at: http://localhost:8001 (or http://opaqe.iptime.org:8001)
 
 4) Build for production
    - npm run build   (or: bun run build)
@@ -40,5 +40,5 @@ Optional (for AI providers):
 
 ## Notes
 - No .env needed; keys are stored securely in your browser (local settings).
-- Dev server port is 8080 (configured in vite.config.ts).
+- Dev server port is 8001 (configured in vite.config.ts).
 - If you run into issues, please share the console error message to help troubleshoot quickly.

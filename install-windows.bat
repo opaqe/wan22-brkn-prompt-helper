@@ -203,14 +203,15 @@ if /i "%start%"=="no" goto :end
 
 echo.
 echo %BLUE%Starting development server...%RESET%
-echo %YELLOW%The app will open at: http://localhost:8080%RESET%
+echo %YELLOW%The app will open at: http://localhost:8001%RESET%
+echo %YELLOW%Or via your configured host: http://opaqe.iptime.org:8001%RESET%
 echo %YELLOW%Press Ctrl+C to stop the server%RESET%
 echo.
 
 :: Wait a moment then open browser (compatible with all Windows versions)
 echo %CYAN%Opening browser in 3 seconds...%RESET%
 ping 127.0.0.1 -n 4 >nul
-start "" "http://localhost:8080"
+start "" "http://localhost:8001"
 
 :: Start the development server
 %RUN_CMD%

@@ -138,7 +138,7 @@ For Windows users, we provide convenient batch files for easy setup:
    ```
 
 4. **Open your browser**
-   Navigate to `http://localhost:8080`
+   Navigate to `http://localhost:8001` or `http://opaqe.iptime.org:8001`
 
 5. **Select provider and add your API key**
    In the app, click the gear icon (Settings) → choose your LLM provider → paste your API key → Save.
